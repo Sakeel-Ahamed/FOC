@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ParameterDefinitions>
+
+  <!-- Mandatory fields: Name, DataType, Value          -->
+  <!-- Optional but useful: Min, Max, Unit, Description -->
+
+  <!-- Example: LED blink rate counts -->
+  <Parameter Name="BEnableLedBlink">
+    <DataType>boolean</DataType>
+    <Value>1</Value>
+    <Min>0</Min>
+    <Max>1</Max>
+    <Unit>-</Unit>
+    <Description>Enable LED blinking</Description>
+  </Parameter>
+
+</ParameterDefinitions>

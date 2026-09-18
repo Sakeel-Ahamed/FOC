@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SignalDefinitions>
+
+  <Signal Name="BLed100ms">
+    <DataType>boolean</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>1</Max>
+    <Description>100ms LED state</Description>
+  </Signal>
+
+  <Signal Name="BLed500ms">
+    <DataType>boolean</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>1</Max>
+    <Description>500ms LED state</Description>
+  </Signal>
+
+  <Signal Name="BLed1000ms">
+    <DataType>boolean</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>1</Max>
+    <Description>1000ms LED state</Description>
+  </Signal>
+
+
+</SignalDefinitions>
