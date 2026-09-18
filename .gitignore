@@ -1,0 +1,22 @@
+# Simulink build outputs
+Build/motor_control_ert_rtw/
+Build/*_ert_rtw/
+Build/slprj/
+Build/*.bin
+Build/*.elf
+
+# Build artefacts
+Build/*.hex
+Build/*.o
+Build/*.map
+Build/*.slxc
+Build/*.asv
+
+# MATLAB cache/info files
+*.mat
+*.dmr
+*.autosave
+
+# Keep these source files
+!Build/loadall.m
+!Build/compare_model.m
