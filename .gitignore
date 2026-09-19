@@ -4,6 +4,8 @@ Build/*_ert_rtw/
 Build/slprj/
 Build/*.bin
 Build/*.elf
+Build/*.ioctmp
+Builed/*.ioctmprsv
 
 # Build artefacts
 Build/*.hex
