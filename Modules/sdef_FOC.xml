@@ -41,4 +41,12 @@
     <Description>ESC Board Temperature</Description>
   </Signal>
 
+  <Signal Name="NPot">
+    <DataType>double</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-1000</Min>
+    <Max>1000</Max>
+    <Description>Onboard Potentiometer</Description>
+  </Signal>
+
 </SignalDefinitions>
