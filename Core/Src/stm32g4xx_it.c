@@ -160,6 +160,20 @@ __attribute__((weak)) void DebugMon_Handler (void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles DMA1 channel2 global interrupt.
+  */
+__attribute__((weak)) void DMA1_Channel2_IRQHandler (void)
+{
+  /* USER CODE BEGIN DMA1_Channel2_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel2_IRQn 0 */
+
+  /* USER CODE BEGIN DMA1_Channel2_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel2_IRQn 1 */
+}
+
+/**
   * @brief This function handles DMA1 channel4 global interrupt.
   */
 __attribute__((weak)) void DMA1_Channel4_IRQHandler (void)

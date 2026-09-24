@@ -25,5 +25,20 @@
     <Description>1000ms LED state</Description>
   </Signal>
 
+  <Signal Name="VBus">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>30</Max>
+    <Description>ESC Bus Voltage</Description>
+  </Signal>
+
+  <Signal Name="TESCBoard">
+    <DataType>double</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-40</Min>
+    <Max>125</Max>
+    <Description>ESC Board Temperature</Description>
+  </Signal>
 
 </SignalDefinitions>
