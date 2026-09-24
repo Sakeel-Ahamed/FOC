@@ -1,10 +1,11 @@
 % loadall.m
-% Automatically discovers and loads all XML signal (sdef) and parameter (pdef)
-% definition files from the Modules folder into the MATLAB base workspace
+% Automatically discovers and loads XML signal/parameter definitions and runs
+% all MATLAB .m scripts from the Modules folder into the MATLAB base workspace
 %
 % Naming convention:
 %   sdef_*.xml  ->  loaded as Simulink.Signal objects
 %   pdef_*.xml  ->  loaded as Simulink.Parameter objects
+%   *.m         ->  executed as MATLAB scripts in the base workspace
 %
 % Location: C:\Users\sakee\OneDrive\Desktop\STM32_Projects\Motor_Control\Build
 % Scans:    C:\Users\sakee\OneDrive\Desktop\STM32_Projects\Motor_Control\Modules
@@ -21,21 +22,23 @@ function loadall()
         error('Modules folder not found at: %s', modulesDir);
     end
 
-    % Find all XML files in Modules folder
+    % Find XML definition files and MATLAB scripts in Modules folder
     xmlFiles = dir(fullfile(modulesDir, '*.xml'));
+    mFiles   = dir(fullfile(modulesDir, '*.m'));
 
-    if isempty(xmlFiles)
-        fprintf('No XML files found in: %s\n', modulesDir);
-        return;
-    end
+    % Make functions/helpers in Modules available on the MATLAB path.
+    % Scripts are still explicitly executed below in the base workspace.
+    addpath(modulesDir);
 
     fprintf('===========================================\n');
     fprintf('Scanning: %s\n', modulesDir);
     fprintf('Found %d XML file(s)\n', length(xmlFiles));
+    fprintf('Found %d MATLAB .m file(s)\n', length(mFiles));
     fprintf('===========================================\n');
 
     totalSignals    = 0;
     totalParameters = 0;
+    totalMScripts   = 0;
 
     % Loop through each XML file and route to correct loader
     for f = 1 : length(xmlFiles)
@@ -67,9 +70,35 @@ function loadall()
 
     end
 
+    % Run all MATLAB scripts in Modules in the base workspace.
+    % This is important for lookup-table files such as FOC_LookupTables.m,
+    % because variables created by the script must be visible to Simulink.
+    for f = 1 : length(mFiles)
+
+        fname = mFiles(f).name;
+        mPath = fullfile(modulesDir, fname);
+
+        fprintf('\nRunning: %s\n', fname);
+
+        try
+            % Escape single quotes in the path, then execute in base workspace.
+            escapedPath = strrep(mPath, '''', '''''');
+            evalin('base', sprintf('run(''%s'');', escapedPath));
+
+            totalMScripts = totalMScripts + 1;
+            fprintf('  [MAT] %s loaded successfully\n', fname);
+
+        catch e
+            fprintf('  WARNING: Failed to run %s\n', fname);
+            fprintf('  Reason: %s\n', e.message);
+        end
+
+    end
+
     fprintf('\n===========================================\n');
-    fprintf('Signals loaded:    %d\n', totalSignals);
-    fprintf('Parameters loaded: %d\n', totalParameters);
+    fprintf('Signals loaded:      %d\n', totalSignals);
+    fprintf('Parameters loaded:   %d\n', totalParameters);
+    fprintf('MATLAB scripts run:  %d\n', totalMScripts);
     fprintf('===========================================\n');
 
     % Hide storage class labels on all loaded models (skip locked libraries)
