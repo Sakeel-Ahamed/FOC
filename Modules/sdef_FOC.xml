@@ -34,7 +34,7 @@
   </Signal>
 
   <Signal Name="TESCBoard">
-    <DataType>double</DataType>
+    <DataType>single</DataType>
     <InitialValue>0</InitialValue>
     <Min>-40</Min>
     <Max>125</Max>
@@ -42,7 +42,7 @@
   </Signal>
 
   <Signal Name="NPot">
-    <DataType>double</DataType>
+    <DataType>single</DataType>
     <InitialValue>0</InitialValue>
     <Min>-1000</Min>
     <Max>1000</Max>
