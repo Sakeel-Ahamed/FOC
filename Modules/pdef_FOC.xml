@@ -12,5 +12,13 @@
     <Unit>-</Unit>
     <Description>Enable LED blinking</Description>
   </Parameter>
+  <Parameter Name="fClockFrequency">
+    <DataType>single</DataType>
+    <Value>170000000</Value>
+    <Min>0</Min>
+    <Max>4294967295</Max>
+    <Unit>Hz</Unit>
+    <Description>Clock frequency</Description>
+  </Parameter>
 
 </ParameterDefinitions>
