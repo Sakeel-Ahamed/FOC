@@ -1,0 +1,7 @@
+EXPORTS
+    CurrentSense_EnableOPAMPs_xn4b83cLCkSrzqXPGSVWUD @1
+    Profiler_FOC_Start_xn4b83cLCkSrzqXPGSVWUD @2
+    Profiler_FOC_Stop_xn4b83cLCkSrzqXPGSVWUD @3
+    customcode_xn4b83cLCkSrzqXPGSVWUD_initializer @4
+    get_checksum_source_info @5
+    get_dll_checksum_xn4b83cLCkSrzqXPGSVWUD @6

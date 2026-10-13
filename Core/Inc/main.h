@@ -30,6 +30,7 @@ extern "C" {
 #include "stm32g4xx_hal.h"
 #include "stm32g4xx_ll_adc.h"
 #include "stm32g4xx_ll_dma.h"
+#include "stm32g4xx_ll_opamp.h"
 #include "stm32g4xx_ll_rcc.h"
 #include "stm32g4xx_ll_bus.h"
 #include "stm32g4xx_ll_crs.h"
@@ -76,6 +77,10 @@ void   MX_USART2_UART_Init(void);
 void   MX_ADC1_Init(void);
 void   MX_TIM2_Init(void);
 void   MX_TIM1_Init(void);
+void   MX_ADC2_Init(void);
+void   MX_OPAMP1_Init(void);
+void   MX_OPAMP2_Init(void);
+void   MX_OPAMP3_Init(void);
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
