@@ -20,5 +20,41 @@
     <Unit>Hz</Unit>
     <Description>Clock frequency</Description>
   </Parameter>
+  
+  <Parameter Name="NADCOffsetPhaseU">
+    <DataType>single</DataType>
+    <Value>2551</Value>
+    <Min>0</Min>
+    <Max>65536</Max>
+    <Unit>-</Unit>
+    <Description>U-phase ADC offset</Description>
+  </Parameter>
+
+  <Parameter Name="NADCOffsetPhaseV">
+    <DataType>single</DataType>
+    <Value>2520</Value>
+    <Min>0</Min>
+    <Max>65536</Max>
+    <Unit>-</Unit>
+    <Description>V-phase ADC offset</Description>
+  </Parameter>
+
+  <Parameter Name="NADCOffsetPhaseW">
+    <DataType>single</DataType>
+    <Value>2523</Value>
+    <Min>0</Min>
+    <Max>65536</Max>
+    <Unit>-</Unit>
+    <Description>W-phase ADC offset</Description>
+  </Parameter>
+
+  <Parameter Name="NADCCurrentGain">
+    <DataType>single</DataType>
+    <Value>0.02938</Value>
+    <Min>0</Min>
+    <Max>65536</Max>
+    <Unit>-</Unit>
+    <Description>Current gain for ADC</Description>
+  </Parameter>
 
 </ParameterDefinitions>

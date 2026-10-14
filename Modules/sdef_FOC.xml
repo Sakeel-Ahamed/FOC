@@ -49,4 +49,28 @@
     <Description>Onboard Potentiometer</Description>
   </Signal>
 
+  <Signal Name="IPhaseU">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-100</Min>
+    <Max>100</Max>
+    <Description>Phase U Current</Description>
+  </Signal>
+
+  <Signal Name="IPhaseV">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-100</Min>
+    <Max>100</Max>
+    <Description>Phase V Current</Description>
+  </Signal>
+
+  <Signal Name="IPhaseW">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-100</Min>
+    <Max>100</Max>
+    <Description>Phase W Current</Description>
+  </Signal>
+
 </SignalDefinitions>
