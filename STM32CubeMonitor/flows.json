@@ -1,0 +1,4312 @@
+[
+    {
+        "id": "8381c865.236028",
+        "type": "subflow",
+        "name": "Single value",
+        "info": "The 'single value' subflow allows to extract data from processing node.\r\n\r\n * Filter Data to extract only one variable after the \"processing node\" step .\r\n * Modify the message to fit with standard widgets such as gauges.\r\n * Limit the number of messages to a maximum of 10 msg per second.\r\n\r\n### **Input**\r\n\r\nThe subflow 'single value' takes in input the `msg.payload`\r\nfrom the processing output. All the messages sent by the processing node have the same structure.\r\n\r\n    \"payload\": {\r\n        \"groupname\": \"Snapshot2\",\r\n        \"variabledata\": [\r\n            {\r\n                \"y\": \"9\",\r\n                \"x\": \"1567509421459\"\r\n            },\r\n            {\r\n                \"y\": \"9\",\r\n                \"x\": \"1567509421459\"\r\n            },\r\n            {\r\n                \"y\": \"9\",\r\n                \"x\": \"1567509421459\"\r\n            }\r\n        ],\r\n        \"variablename\": \"int2\"\r\n      }\r\n    }\r\n\r\n### **Filter on selected variable**\r\nSeveral messages are sent by the processing node for each variable, so the first step of this 'single value' subflow is to filter and keep only messages related to the selected variable.\r\nThe 'filter variable' node will only keep messages with the right `variablename` key.\r\n\r\n### **Extract duplets table**\r\n\r\nThe received message is an Object containing {groupname, variabledata[array], variablename}.  \r\nThe array contains two variables :\r\n - `y` the value \r\n - `x` the time\r\n\r\nA single message contains multiple pairs of values extract at a regular time interval.\r\nThe time interval depends on the acquisition frequency.\r\nWith the 'change' node and the `set` property, the `msg.payload` is set to \r\n`msg.payload.variabledata`, only the data variable array is set into msg.payload.\r\n\r\n    \"payload\": {\r\n        \"variabledata\": [\r\n            {\r\n                \"y\": \"9\",\r\n                \"x\": \"1567509421459\"\r\n            },\r\n            {\r\n                \"y\": \"9\",\r\n                \"x\": \"1567509421459\"\r\n            },\r\n            {\r\n                \"y\": \"9\",\r\n                \"x\": \"1567509421459\"\r\n            }\r\n        ]\r\n    }\r\n\r\n### **Split duplets table**\r\n\r\nThe data variable array is split with a length of one in smaller objects by the 'split' node.\r\nEach new object contains two subvariables : `y` and `x`.\r\n\r\n    \"payload\": {\r\n        \"y\": \"9\",\r\n        \"x\": \"1567509421459\"\r\n    }\r\n\r\n\r\n### **Limit the number of messages**\r\n\r\nThe 'delay' node allows to limit the maximum number of message per second.\r\nIn the 'single value' subflow, one message is extracted per second.\r\n\r\n>_Be careful, a dashboard saturation risk exists if too many messages are received per second._\r\n\r\n### **Extract only y values**\r\n\r\nThe `msg.payload` is set to `msg.payload.y` with the `set` property. \r\nOnly `y` variable is set into msg.payload as single value.\r\n\r\n    \"payload\": { \r\n        \"y\": \"9\" \r\n    }\r\n\r\n### **Output** \r\n\r\nSome widgets such as the gauge and the text node are using the `msg.payload` property.  \r\nThe output node is linked to a gauge that allows to see the evolution \r\nof the `y` variable as a function of time.\r\n\r\n\r\n![subflow_gauge](images/subflow_gauge.png)\r\n\r\n### **Details**\r\n\r\nNote : The debug node allows to see clearly and easily the \r\nmessage at the node output.  \r\n\r\n\r\n> More details on : [Node-Red](https://nodered.org/docs/user-guide/editor/workspace/subflows)\r\n\r\n\r\n-------\r\n\r\n",
+        "category": "",
+        "in": [
+            {
+                "x": 40,
+                "y": 60,
+                "wires": [
+                    {
+                        "id": "3c5ffe0d.9063b2"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 780,
+                "y": 140,
+                "wires": [
+                    {
+                        "id": "66397fd3.d8111",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [
+            {
+                "name": "varfilter",
+                "type": "str",
+                "value": "",
+                "ui": {
+                    "icon": "font-awesome/fa-filter",
+                    "label": {
+                        "en-US": "Variable"
+                    },
+                    "type": "input",
+                    "opts": {
+                        "types": [
+                            "str"
+                        ]
+                    }
+                }
+            }
+        ],
+        "color": "#3CB4E6"
+    },
+    {
+        "id": "3c5ffe0d.9063b2",
+        "type": "switch",
+        "z": "8381c865.236028",
+        "name": "filter variable",
+        "property": "payload.variablename",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "varfilter",
+                "vt": "env"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 1,
+        "x": 170,
+        "y": 60,
+        "wires": [
+            [
+                "4e5ba7a5.14dec8"
+            ]
+        ]
+    },
+    {
+        "id": "4e5ba7a5.14dec8",
+        "type": "change",
+        "z": "8381c865.236028",
+        "name": "keep only table of duplets",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.variabledata",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 430,
+        "y": 60,
+        "wires": [
+            [
+                "42bc6ed.5b20d9"
+            ]
+        ]
+    },
+    {
+        "id": "42bc6ed.5b20d9",
+        "type": "split",
+        "z": "8381c865.236028",
+        "name": "Split a table[1..n] of duplets in n msg of single duplet",
+        "splt": "\\n",
+        "spltType": "str",
+        "arraySplt": 1,
+        "arraySpltType": "len",
+        "stream": false,
+        "addname": "",
+        "x": 800,
+        "y": 60,
+        "wires": [
+            [
+                "8b8ddb84.6fb208"
+            ]
+        ]
+    },
+    {
+        "id": "8b8ddb84.6fb208",
+        "type": "delay",
+        "z": "8381c865.236028",
+        "name": "",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "10",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "outputs": 1,
+        "x": 200,
+        "y": 140,
+        "wires": [
+            [
+                "66397fd3.d8111"
+            ]
+        ]
+    },
+    {
+        "id": "66397fd3.d8111",
+        "type": "change",
+        "z": "8381c865.236028",
+        "name": "keep only value and delete timestamp",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "payload.y",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7b9ed63e.2138f8",
+        "type": "tab",
+        "label": "Basic_Flow",
+        "disabled": false,
+        "info": "# Basic flow to start with STM32CubeMonitor."
+    },
+    {
+        "id": "1ebbb430.dac7dc",
+        "type": "ui_chartst",
+        "z": "7b9ed63e.2138f8",
+        "group": "f9c34dde.1e2f4",
+        "name": "myChart",
+        "order": 4,
+        "width": 15,
+        "height": 9,
+        "chartType": "line",
+        "curveType": "linear",
+        "duration": "10",
+        "ymin": "",
+        "ymax": "",
+        "x": 660,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "6013fb0b.5b7504",
+        "type": "acquisition out",
+        "z": "7b9ed63e.2138f8",
+        "name": "myProbe_Out",
+        "probeconfig": "2842e4fc73cc77c9",
+        "x": 880,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "4a573fb0.4bc99",
+        "type": "acquisition in",
+        "z": "7b9ed63e.2138f8",
+        "name": "myProbe_In",
+        "probeconfig": "f750537e115ac55d",
+        "x": 230,
+        "y": 500,
+        "wires": [
+            [
+                "a7c3e070.5a6c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "d59587ff.cd1748",
+        "type": "variables",
+        "z": "7b9ed63e.2138f8",
+        "groupname": "myVariables",
+        "accesspoint": 0,
+        "execonfig": "08ddb43852c0ac95",
+        "variablelist": [],
+        "triggerstartmode": "manual",
+        "triggername": "IPhaseU",
+        "triggerthreshold": "30000",
+        "frequency": "",
+        "frequencyType": "10",
+        "snapshotheader": "",
+        "mode": "direct",
+        "lastImportedTime": 1792279189234,
+        "openStatus": true,
+        "x": 670,
+        "y": 320,
+        "wires": [
+            [
+                "6013fb0b.5b7504"
+            ],
+            [
+                "f14d0398.f1861"
+            ]
+        ]
+    },
+    {
+        "id": "fc00295e.79ada8",
+        "type": "ui_button",
+        "z": "7b9ed63e.2138f8",
+        "name": "",
+        "group": "f9c34dde.1e2f4",
+        "order": 3,
+        "width": 5,
+        "height": 1,
+        "passthru": false,
+        "label": "Clear Graphs",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "clear",
+        "x": 470,
+        "y": 720,
+        "wires": [
+            [
+                "1ebbb430.dac7dc"
+            ]
+        ]
+    },
+    {
+        "id": "5fd51c96.2330e4",
+        "type": "ui_button",
+        "z": "7b9ed63e.2138f8",
+        "name": "",
+        "group": "f9c34dde.1e2f4",
+        "order": 1,
+        "width": 5,
+        "height": 1,
+        "passthru": false,
+        "label": "START Acquisition",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "start",
+        "x": 450,
+        "y": 280,
+        "wires": [
+            [
+                "d59587ff.cd1748"
+            ]
+        ]
+    },
+    {
+        "id": "52eadfe3.2c8cc",
+        "type": "ui_button",
+        "z": "7b9ed63e.2138f8",
+        "name": "",
+        "group": "f9c34dde.1e2f4",
+        "order": 2,
+        "width": 5,
+        "height": 1,
+        "passthru": true,
+        "label": "STOP Acquisition",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "stop",
+        "x": 450,
+        "y": 360,
+        "wires": [
+            [
+                "d59587ff.cd1748"
+            ]
+        ]
+    },
+    {
+        "id": "a7c3e070.5a6c",
+        "type": "processing",
+        "z": "7b9ed63e.2138f8",
+        "groupname": "myVariables",
+        "groupid": "d59587ff.cd1748",
+        "expressions": [],
+        "statistics": [],
+        "logmode": "no",
+        "logformat": "stcm",
+        "x": 490,
+        "y": 500,
+        "wires": [
+            [
+                "1ebbb430.dac7dc",
+                "65767d6bc403a108",
+                "9badd73eb24f84b5"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "f14d0398.f1861",
+        "type": "ui_toast",
+        "z": "7b9ed63e.2138f8",
+        "position": "top right",
+        "displayTime": "3",
+        "highlight": "",
+        "sendall": true,
+        "outputs": 0,
+        "ok": "OK",
+        "cancel": "",
+        "raw": false,
+        "topic": "",
+        "name": "",
+        "x": 870,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "3187cd7ade213985",
+        "type": "ui_write",
+        "z": "7b9ed63e.2138f8",
+        "group": "f9c34dde.1e2f4",
+        "name": "",
+        "order": 5,
+        "width": 0,
+        "height": 0,
+        "x": 670,
+        "y": 260,
+        "wires": [
+            [
+                "6013fb0b.5b7504"
+            ]
+        ]
+    },
+    {
+        "id": "6b0fc3e4fa1e5741",
+        "type": "variables",
+        "z": "7b9ed63e.2138f8",
+        "groupname": "TuneParameters",
+        "accesspoint": 0,
+        "execonfig": "70e65b85ba0d87fb",
+        "variablelist": [],
+        "triggerstartmode": "manual",
+        "triggername": "FOC_P.BEnableLedBlink",
+        "triggerthreshold": "",
+        "frequency": "",
+        "frequencyType": "0",
+        "snapshotheader": "",
+        "mode": "direct",
+        "lastImportedTime": 1792276925183,
+        "openStatus": false,
+        "x": 490,
+        "y": 200,
+        "wires": [
+            [
+                "3187cd7ade213985"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "6ea9e9356ec78e95",
+        "type": "inject",
+        "z": "7b9ed63e.2138f8",
+        "name": "Init Tuning Parameters",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 240,
+        "y": 180,
+        "wires": [
+            [
+                "6b0fc3e4fa1e5741"
+            ]
+        ]
+    },
+    {
+        "id": "65767d6bc403a108",
+        "type": "subflow:8381c865.236028",
+        "z": "7b9ed63e.2138f8",
+        "name": "",
+        "env": [
+            {
+                "name": "varfilter",
+                "value": "NADC1ErrorCount",
+                "type": "str"
+            }
+        ],
+        "x": 690,
+        "y": 520,
+        "wires": [
+            [
+                "da4d1fcb55200c37"
+            ]
+        ]
+    },
+    {
+        "id": "da4d1fcb55200c37",
+        "type": "ui_text",
+        "z": "7b9ed63e.2138f8",
+        "group": "f9c34dde.1e2f4",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "NADC1ErrorCount",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 910,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "9badd73eb24f84b5",
+        "type": "subflow:8381c865.236028",
+        "z": "7b9ed63e.2138f8",
+        "name": "",
+        "env": [
+            {
+                "name": "varfilter",
+                "value": "NADC2ErrorCount",
+                "type": "str"
+            }
+        ],
+        "x": 690,
+        "y": 580,
+        "wires": [
+            [
+                "1625eee990b4ee72"
+            ]
+        ]
+    },
+    {
+        "id": "1625eee990b4ee72",
+        "type": "ui_text",
+        "z": "7b9ed63e.2138f8",
+        "group": "f9c34dde.1e2f4",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "NADC2ErrorCount",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 910,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "f9c34dde.1e2f4",
+        "type": "ui_group",
+        "name": "Chart",
+        "tab": "17d09b07.741a55",
+        "order": 1,
+        "disp": true,
+        "width": 15,
+        "collapse": false
+    },
+    {
+        "id": "2842e4fc73cc77c9",
+        "type": "probe",
+        "probeid": "066AFF525266555067073112",
+        "probename": "ST-Link v2-1B 066AFF525266555067073112",
+        "protocol": "SWD",
+        "frequency": "1.8 MHz - Default",
+        "probeproperty": "{\"SWD\":[\"4.6 MHz\",\"1.8 MHz - Default\",\"950 kHz\",\"400 kHz\",\"150 kHz\"],\"JTAG\":[\"18 MHz\",\"9 MHz\",\"4.5 MHz\",\"2.25 MHz\",\"1.12 MHz - Default\",\"560 kHz\",\"280 kHz\",\"140 kHz\"]}",
+        "probeversion": "ST Link firmware version V2.J45",
+        "connectionType": "p2p",
+        "nickname": ""
+    },
+    {
+        "id": "f750537e115ac55d",
+        "type": "probe",
+        "probeid": "066AFF525266555067073112",
+        "probename": "ST-Link v2-1B 066AFF525266555067073112",
+        "protocol": "SWD",
+        "frequency": "1.8 MHz - Default",
+        "probeproperty": "{\"SWD\":[\"4.6 MHz\",\"1.8 MHz - Default\",\"950 kHz\",\"400 kHz\",\"150 kHz\"],\"JTAG\":[\"18 MHz\",\"9 MHz\",\"4.5 MHz\",\"2.25 MHz\",\"1.12 MHz - Default\",\"560 kHz\",\"280 kHz\",\"140 kHz\"]}",
+        "probeversion": "ST Link firmware version V2.J45",
+        "connectionType": "p2p",
+        "nickname": ""
+    },
+    {
+        "id": "08ddb43852c0ac95",
+        "type": "exe-config",
+        "name": "FOC",
+        "exefile": "C:\\Users\\sakee\\OneDrive\\Desktop\\STM32_Projects\\FOC\\Build\\FOC.elf",
+        "exefolder": "C:\\Users\\sakee\\OneDrive\\Desktop\\STM32_Projects\\FOC\\Build",
+        "exevariablelist": [
+            {
+                "address": "0x08009db8",
+                "name": "AHBPrescTable[0]",
+                "type": 1
+            },
+            {
+                "address": "0x08009dc8",
+                "name": "APBPrescTable[0]",
+                "type": 1
+            },
+            {
+                "address": "0x200008a8",
+                "name": "BLed1000ms",
+                "type": 1
+            },
+            {
+                "address": "0x200008a9",
+                "name": "BLed100ms",
+                "type": 1
+            },
+            {
+                "address": "0x200008aa",
+                "name": "BLed500ms",
+                "type": 1
+            },
+            {
+                "address": "0x08009d4c",
+                "name": "CHANNEL_OFFSET_TAB[0]",
+                "type": 1
+            },
+            {
+                "address": "0x200008cc",
+                "name": "FOC_B.AnalogtoDigitalConverter_o2",
+                "type": 3
+            },
+            {
+                "address": "0x200008ce",
+                "name": "FOC_B.AnalogtoDigitalConverter_o2_n",
+                "type": 3
+            },
+            {
+                "address": "0x200008b8",
+                "name": "FOC_B.Gain[0]",
+                "type": 9
+            },
+            {
+                "address": "0x200008b0",
+                "name": "FOC_B.Out",
+                "type": 10
+            },
+            {
+                "address": "0x200008c4",
+                "name": "FOC_B.OutportBufferForIPhaseV",
+                "type": 9
+            },
+            {
+                "address": "0x200008c8",
+                "name": "FOC_B.OutportBufferForIPhaseW",
+                "type": 9
+            },
+            {
+                "address": "0x20000944",
+                "name": "FOC_DW.clockTickCounter",
+                "type": 6
+            },
+            {
+                "address": "0x20000948",
+                "name": "FOC_DW.clockTickCounter_h",
+                "type": 6
+            },
+            {
+                "address": "0x2000094c",
+                "name": "FOC_DW.clockTickCounter_l",
+                "type": 6
+            },
+            {
+                "address": "0x20000952",
+                "name": "FOC_DW.Memory1_PreviousInput",
+                "type": 3
+            },
+            {
+                "address": "0x20000930",
+                "name": "FOC_DW.Memory_PreviousInput",
+                "type": 10
+            },
+            {
+                "address": "0x20000956",
+                "name": "FOC_DW.Memory_PreviousInput_l",
+                "type": 3
+            },
+            {
+                "address": "0x200008dc",
+                "name": "FOC_DW.obj.ADCHandle",
+                "type": 5
+            },
+            {
+                "address": "0x200008e0",
+                "name": "FOC_DW.obj.ADCInternalBuffer[0]",
+                "type": 3
+            },
+            {
+                "address": "0x200008d4",
+                "name": "FOC_DW.obj.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x200008d8",
+                "name": "FOC_DW.obj.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200008d0",
+                "name": "FOC_DW.obj.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200008f0",
+                "name": "FOC_DW.obj_a.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x200008f4",
+                "name": "FOC_DW.obj_a.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200008ec",
+                "name": "FOC_DW.obj_a.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200008f8",
+                "name": "FOC_DW.obj_a.TimerHandle",
+                "type": 5
+            },
+            {
+                "address": "0x20000928",
+                "name": "FOC_DW.obj_h.ADCHandle",
+                "type": 5
+            },
+            {
+                "address": "0x20000920",
+                "name": "FOC_DW.obj_h.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x20000924",
+                "name": "FOC_DW.obj_h.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x2000091c",
+                "name": "FOC_DW.obj_h.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x20000918",
+                "name": "FOC_DW.obj_l.ADCHandle",
+                "type": 5
+            },
+            {
+                "address": "0x20000910",
+                "name": "FOC_DW.obj_l.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x20000914",
+                "name": "FOC_DW.obj_l.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x2000090c",
+                "name": "FOC_DW.obj_l.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x20000900",
+                "name": "FOC_DW.obj_o.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x20000904",
+                "name": "FOC_DW.obj_o.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200008fc",
+                "name": "FOC_DW.obj_o.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x20000908",
+                "name": "FOC_DW.obj_o.TimerHandle",
+                "type": 5
+            },
+            {
+                "address": "0x20000958",
+                "name": "FOC_DW.Output_DSTATE",
+                "type": 1
+            },
+            {
+                "address": "0x20000940",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_a",
+                "type": 9
+            },
+            {
+                "address": "0x20000954",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_b",
+                "type": 3
+            },
+            {
+                "address": "0x20000950",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_g",
+                "type": 3
+            },
+            {
+                "address": "0x2000093c",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_h",
+                "type": 9
+            },
+            {
+                "address": "0x20000938",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystemOu",
+                "type": 9
+            },
+            {
+                "address": "0x08009d54",
+                "name": "FOC_M",
+                "type": 5
+            },
+            {
+                "address": "0x20000964",
+                "name": "FOC_M_.errorStatus",
+                "type": 5
+            },
+            {
+                "address": "0x20000968",
+                "name": "FOC_M_.Timing.TaskCounters.TID[0]",
+                "type": 3
+            },
+            {
+                "address": "0x20000630",
+                "name": "FOC_P._Gain",
+                "type": 9
+            },
+            {
+                "address": "0x20000660",
+                "name": "FOC_P._Gain_k",
+                "type": 9
+            },
+            {
+                "address": "0x200006a0",
+                "name": "FOC_P._Y0",
+                "type": 5
+            },
+            {
+                "address": "0x200006a4",
+                "name": "FOC_P.adc1status_Y0",
+                "type": 3
+            },
+            {
+                "address": "0x200006a6",
+                "name": "FOC_P.adc2status_Y0",
+                "type": 3
+            },
+            {
+                "address": "0x20000644",
+                "name": "FOC_P.AddConstant_Bias",
+                "type": 9
+            },
+            {
+                "address": "0x20000540",
+                "name": "FOC_P.BEnableLedBlink",
+                "type": 1
+            },
+            {
+                "address": "0x200006b4",
+                "name": "FOC_P.BLed1000ms_InitialValue",
+                "type": 1
+            },
+            {
+                "address": "0x200006b5",
+                "name": "FOC_P.BLed100ms_InitialValue",
+                "type": 1
+            },
+            {
+                "address": "0x200006b6",
+                "name": "FOC_P.BLed500ms_InitialValue",
+                "type": 1
+            },
+            {
+                "address": "0x20000560",
+                "name": "FOC_P.CompareToConstant_const",
+                "type": 10
+            },
+            {
+                "address": "0x20000650",
+                "name": "FOC_P.Constant11_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000638",
+                "name": "FOC_P.Constant12_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000634",
+                "name": "FOC_P.Constant13_Value",
+                "type": 9
+            },
+            {
+                "address": "0x200005e0",
+                "name": "FOC_P.Constant1_Value",
+                "type": 10
+            },
+            {
+                "address": "0x20000658",
+                "name": "FOC_P.Constant1_Value_d",
+                "type": 9
+            },
+            {
+                "address": "0x200005e8",
+                "name": "FOC_P.Constant1_Value_i",
+                "type": 10
+            },
+            {
+                "address": "0x20000628",
+                "name": "FOC_P.Constant1_Value_l",
+                "type": 9
+            },
+            {
+                "address": "0x20000618",
+                "name": "FOC_P.Constant2_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000608",
+                "name": "FOC_P.Constant3_Value",
+                "type": 10
+            },
+            {
+                "address": "0x2000062c",
+                "name": "FOC_P.Constant3_Value_h",
+                "type": 9
+            },
+            {
+                "address": "0x2000064c",
+                "name": "FOC_P.Constant4_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000654",
+                "name": "FOC_P.Constant5_Value",
+                "type": 9
+            },
+            {
+                "address": "0x2000061c",
+                "name": "FOC_P.Constant_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000648",
+                "name": "FOC_P.Constant_Value_d",
+                "type": 9
+            },
+            {
+                "address": "0x2000063c",
+                "name": "FOC_P.Constant_Value_k",
+                "type": 9
+            },
+            {
+                "address": "0x20000640",
+                "name": "FOC_P.Constant_Value_l",
+                "type": 9
+            },
+            {
+                "address": "0x200006b7",
+                "name": "FOC_P.Constant_Value_p",
+                "type": 1
+            },
+            {
+                "address": "0x200006b8",
+                "name": "FOC_P.FixPtConstant_Value",
+                "type": 1
+            },
+            {
+                "address": "0x20000614",
+                "name": "FOC_P.Gain1_Gain",
+                "type": 9
+            },
+            {
+                "address": "0x20000620",
+                "name": "FOC_P.Gain2_Gain",
+                "type": 9
+            },
+            {
+                "address": "0x20000610",
+                "name": "FOC_P.Gain_Gain",
+                "type": 9
+            },
+            {
+                "address": "0x2000065c",
+                "name": "FOC_P.Gain_Gain_k",
+                "type": 9
+            },
+            {
+                "address": "0x20000688",
+                "name": "FOC_P.IPhaseU_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000664",
+                "name": "FOC_P.IPhaseU_Y0",
+                "type": 9
+            },
+            {
+                "address": "0x20000670",
+                "name": "FOC_P.IPhaseU_Y0_i",
+                "type": 9
+            },
+            {
+                "address": "0x2000068c",
+                "name": "FOC_P.IPhaseV_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000668",
+                "name": "FOC_P.IPhaseV_Y0",
+                "type": 9
+            },
+            {
+                "address": "0x20000674",
+                "name": "FOC_P.IPhaseV_Y0_h",
+                "type": 9
+            },
+            {
+                "address": "0x20000690",
+                "name": "FOC_P.IPhaseW_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x2000066c",
+                "name": "FOC_P.IPhaseW_Y0",
+                "type": 9
+            },
+            {
+                "address": "0x20000678",
+                "name": "FOC_P.IPhaseW_Y0_g",
+                "type": 9
+            },
+            {
+                "address": "0x200006aa",
+                "name": "FOC_P.Memory1_InitialCondition",
+                "type": 3
+            },
+            {
+                "address": "0x200005f8",
+                "name": "FOC_P.Memory_InitialCondition",
+                "type": 10
+            },
+            {
+                "address": "0x200006ae",
+                "name": "FOC_P.Memory_InitialCondition_c",
+                "type": 3
+            },
+            {
+                "address": "0x200006b0",
+                "name": "FOC_P.NADC1ErrorCount_InitialValue",
+                "type": 3
+            },
+            {
+                "address": "0x200006b2",
+                "name": "FOC_P.NADC2ErrorCount_InitialValue",
+                "type": 3
+            },
+            {
+                "address": "0x20000000",
+                "name": "FOC_P.NADCCurrentGain",
+                "type": 9
+            },
+            {
+                "address": "0x20000004",
+                "name": "FOC_P.NADCOffsetPhaseU",
+                "type": 9
+            },
+            {
+                "address": "0x20000008",
+                "name": "FOC_P.NADCOffsetPhaseV",
+                "type": 9
+            },
+            {
+                "address": "0x2000000c",
+                "name": "FOC_P.NADCOffsetPhaseW",
+                "type": 9
+            },
+            {
+                "address": "0x20000694",
+                "name": "FOC_P.NPot_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x200005d8",
+                "name": "FOC_P.Out1_Y0",
+                "type": 10
+            },
+            {
+                "address": "0x200006b9",
+                "name": "FOC_P.Output_InitialCondition",
+                "type": 1
+            },
+            {
+                "address": "0x20000578",
+                "name": "FOC_P.PulseGenerator1_Amp",
+                "type": 10
+            },
+            {
+                "address": "0x20000598",
+                "name": "FOC_P.PulseGenerator1_Amp_d",
+                "type": 10
+            },
+            {
+                "address": "0x200005b8",
+                "name": "FOC_P.PulseGenerator1_Amp_p",
+                "type": 10
+            },
+            {
+                "address": "0x20000588",
+                "name": "FOC_P.PulseGenerator1_Duty",
+                "type": 10
+            },
+            {
+                "address": "0x200005a8",
+                "name": "FOC_P.PulseGenerator1_Duty_c",
+                "type": 10
+            },
+            {
+                "address": "0x200005c8",
+                "name": "FOC_P.PulseGenerator1_Duty_n",
+                "type": 10
+            },
+            {
+                "address": "0x20000580",
+                "name": "FOC_P.PulseGenerator1_Period",
+                "type": 10
+            },
+            {
+                "address": "0x200005a0",
+                "name": "FOC_P.PulseGenerator1_Period_o",
+                "type": 10
+            },
+            {
+                "address": "0x200005c0",
+                "name": "FOC_P.PulseGenerator1_Period_o5",
+                "type": 10
+            },
+            {
+                "address": "0x20000590",
+                "name": "FOC_P.PulseGenerator1_PhaseDelay",
+                "type": 10
+            },
+            {
+                "address": "0x200005b0",
+                "name": "FOC_P.PulseGenerator1_PhaseDelay_i",
+                "type": 10
+            },
+            {
+                "address": "0x200005d0",
+                "name": "FOC_P.PulseGenerator1_PhaseDelay_m",
+                "type": 10
+            },
+            {
+                "address": "0x20000548",
+                "name": "FOC_P.RepeatingSequenceStair_OutValue[0]",
+                "type": 10
+            },
+            {
+                "address": "0x20000010",
+                "name": "FOC_P.RNTCBreakpoints[0]",
+                "type": 9
+            },
+            {
+                "address": "0x20000600",
+                "name": "FOC_P.Switch1_Threshold",
+                "type": 10
+            },
+            {
+                "address": "0x200005f0",
+                "name": "FOC_P.Switch_Threshold",
+                "type": 10
+            },
+            {
+                "address": "0x20000698",
+                "name": "FOC_P.TESCBoard_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000568",
+                "name": "FOC_P.Timer_tSampleTime",
+                "type": 10
+            },
+            {
+                "address": "0x200006ac",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsys_jxkx",
+                "type": 3
+            },
+            {
+                "address": "0x200006a8",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsyst_jxk",
+                "type": 3
+            },
+            {
+                "address": "0x20000684",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsyste_jx",
+                "type": 9
+            },
+            {
+                "address": "0x20000680",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsystem_j",
+                "type": 9
+            },
+            {
+                "address": "0x2000067c",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsystemOu",
+                "type": 9
+            },
+            {
+                "address": "0x200002a8",
+                "name": "FOC_P.TNTCTable[0]",
+                "type": 9
+            },
+            {
+                "address": "0x2000069c",
+                "name": "FOC_P.VBus_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000624",
+                "name": "FOC_P.VoltageOffset_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000570",
+                "name": "FOC_P.WrapToZero_Threshold",
+                "type": 1
+            },
+            {
+                "address": "0x20000960",
+                "name": "FOC_PrevZCX.FunctionCallSubsystem_Trig_ZCE",
+                "type": 1
+            },
+            {
+                "address": "0x20000988",
+                "name": "foc_start",
+                "type": 5
+            },
+            {
+                "address": "0x200009b8",
+                "name": "htim6.Channel",
+                "type": 2
+            },
+            {
+                "address": "0x200009e0",
+                "name": "htim6.ChannelNState[0]",
+                "type": 2
+            },
+            {
+                "address": "0x200009da",
+                "name": "htim6.ChannelState[0]",
+                "type": 2
+            },
+            {
+                "address": "0x200009e4",
+                "name": "htim6.DMABurstState",
+                "type": 2
+            },
+            {
+                "address": "0x200009bc",
+                "name": "htim6.hdma[0]",
+                "type": 5
+            },
+            {
+                "address": "0x200009b4",
+                "name": "htim6.Init.AutoReloadPreload",
+                "type": 5
+            },
+            {
+                "address": "0x200009ac",
+                "name": "htim6.Init.ClockDivision",
+                "type": 5
+            },
+            {
+                "address": "0x200009a4",
+                "name": "htim6.Init.CounterMode",
+                "type": 5
+            },
+            {
+                "address": "0x200009a8",
+                "name": "htim6.Init.Period",
+                "type": 5
+            },
+            {
+                "address": "0x200009a0",
+                "name": "htim6.Init.Prescaler",
+                "type": 5
+            },
+            {
+                "address": "0x200009b0",
+                "name": "htim6.Init.RepetitionCounter",
+                "type": 5
+            },
+            {
+                "address": "0x2000099c",
+                "name": "htim6.Instance",
+                "type": 5
+            },
+            {
+                "address": "0x200009d8",
+                "name": "htim6.Lock",
+                "type": 2
+            },
+            {
+                "address": "0x200009d9",
+                "name": "htim6.State",
+                "type": 2
+            },
+            {
+                "address": "0x2000088c",
+                "name": "IPhaseU",
+                "type": 9,
+                "checked": true
+            },
+            {
+                "address": "0x20000890",
+                "name": "IPhaseV",
+                "type": 9,
+                "checked": true
+            },
+            {
+                "address": "0x20000894",
+                "name": "IPhaseW",
+                "type": 9,
+                "checked": true
+            },
+            {
+                "address": "0x20000978",
+                "name": "isRateRunning[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000974",
+                "name": "IsrOverrun",
+                "type": 6
+            },
+            {
+                "address": "0x2000085b",
+                "name": "mw_adc1.DataReadyBufferID",
+                "type": 1
+            },
+            {
+                "address": "0x2000086c",
+                "name": "mw_adc1.DataTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x20000868",
+                "name": "mw_adc1.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000085a",
+                "name": "mw_adc1.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x2000086d",
+                "name": "mw_adc1.DmaTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x20000859",
+                "name": "mw_adc1.InjectedNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x2000085e",
+                "name": "mw_adc1.InjStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000860",
+                "name": "mw_adc1.InternalBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000854",
+                "name": "mw_adc1.InternalBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x2000085c",
+                "name": "mw_adc1.mode",
+                "type": 2
+            },
+            {
+                "address": "0x20000864",
+                "name": "mw_adc1.peripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000085d",
+                "name": "mw_adc1.RegStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000858",
+                "name": "mw_adc1.RegularNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x20000877",
+                "name": "mw_adc2.DataReadyBufferID",
+                "type": 1
+            },
+            {
+                "address": "0x20000888",
+                "name": "mw_adc2.DataTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x20000884",
+                "name": "mw_adc2.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000876",
+                "name": "mw_adc2.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000889",
+                "name": "mw_adc2.DmaTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x20000875",
+                "name": "mw_adc2.InjectedNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x2000087a",
+                "name": "mw_adc2.InjStatus",
+                "type": 2
+            },
+            {
+                "address": "0x2000087c",
+                "name": "mw_adc2.InternalBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000870",
+                "name": "mw_adc2.InternalBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000878",
+                "name": "mw_adc2.mode",
+                "type": 2
+            },
+            {
+                "address": "0x20000880",
+                "name": "mw_adc2.peripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000879",
+                "name": "mw_adc2.RegStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000874",
+                "name": "mw_adc2.RegularNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x200007c4",
+                "name": "mw_tim1.cc1Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200007c5",
+                "name": "mw_tim1.cc2Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200007c6",
+                "name": "mw_tim1.cc3Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200007c7",
+                "name": "mw_tim1.cc4Flag",
+                "type": 1
+            },
+            {
+                "address": "0x2000074c",
+                "name": "mw_tim1.channel1.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000750",
+                "name": "mw_tim1.channel1.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000754",
+                "name": "mw_tim1.channel1.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000758",
+                "name": "mw_tim1.channel1.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x2000075c",
+                "name": "mw_tim1.channel1.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000744",
+                "name": "mw_tim1.channel1.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000748",
+                "name": "mw_tim1.channel1.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000760",
+                "name": "mw_tim1.channel1.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x2000076c",
+                "name": "mw_tim1.channel2.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000770",
+                "name": "mw_tim1.channel2.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000774",
+                "name": "mw_tim1.channel2.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000778",
+                "name": "mw_tim1.channel2.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x2000077c",
+                "name": "mw_tim1.channel2.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000764",
+                "name": "mw_tim1.channel2.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000768",
+                "name": "mw_tim1.channel2.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000780",
+                "name": "mw_tim1.channel2.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x2000078c",
+                "name": "mw_tim1.channel3.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000790",
+                "name": "mw_tim1.channel3.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000794",
+                "name": "mw_tim1.channel3.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000798",
+                "name": "mw_tim1.channel3.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x2000079c",
+                "name": "mw_tim1.channel3.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000784",
+                "name": "mw_tim1.channel3.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000788",
+                "name": "mw_tim1.channel3.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200007a0",
+                "name": "mw_tim1.channel3.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200007ac",
+                "name": "mw_tim1.channel4.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007b0",
+                "name": "mw_tim1.channel4.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007b4",
+                "name": "mw_tim1.channel4.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200007b8",
+                "name": "mw_tim1.channel4.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200007bc",
+                "name": "mw_tim1.channel4.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200007a4",
+                "name": "mw_tim1.channel4.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200007a8",
+                "name": "mw_tim1.channel4.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200007c0",
+                "name": "mw_tim1.channel4.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000742",
+                "name": "mw_tim1.errorStatus",
+                "type": 1
+            },
+            {
+                "address": "0x20000743",
+                "name": "mw_tim1.firstIndexReceivedStatus",
+                "type": 1
+            },
+            {
+                "address": "0x20000740",
+                "name": "mw_tim1.isCenterAlignedMode",
+                "type": 1
+            },
+            {
+                "address": "0x2000073c",
+                "name": "mw_tim1.PeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000741",
+                "name": "mw_tim1.repetitionCounter",
+                "type": 1
+            },
+            {
+                "address": "0x20000850",
+                "name": "mw_tim2.cc1Flag",
+                "type": 1
+            },
+            {
+                "address": "0x20000851",
+                "name": "mw_tim2.cc2Flag",
+                "type": 1
+            },
+            {
+                "address": "0x20000852",
+                "name": "mw_tim2.cc3Flag",
+                "type": 1
+            },
+            {
+                "address": "0x20000853",
+                "name": "mw_tim2.cc4Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200007d8",
+                "name": "mw_tim2.channel1.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007dc",
+                "name": "mw_tim2.channel1.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007e0",
+                "name": "mw_tim2.channel1.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200007e4",
+                "name": "mw_tim2.channel1.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200007e8",
+                "name": "mw_tim2.channel1.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200007d0",
+                "name": "mw_tim2.channel1.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200007d4",
+                "name": "mw_tim2.channel1.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200007ec",
+                "name": "mw_tim2.channel1.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200007f8",
+                "name": "mw_tim2.channel2.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007fc",
+                "name": "mw_tim2.channel2.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000800",
+                "name": "mw_tim2.channel2.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000804",
+                "name": "mw_tim2.channel2.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000808",
+                "name": "mw_tim2.channel2.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200007f0",
+                "name": "mw_tim2.channel2.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200007f4",
+                "name": "mw_tim2.channel2.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x2000080c",
+                "name": "mw_tim2.channel2.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000818",
+                "name": "mw_tim2.channel3.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x2000081c",
+                "name": "mw_tim2.channel3.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000820",
+                "name": "mw_tim2.channel3.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000824",
+                "name": "mw_tim2.channel3.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000828",
+                "name": "mw_tim2.channel3.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000810",
+                "name": "mw_tim2.channel3.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000814",
+                "name": "mw_tim2.channel3.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x2000082c",
+                "name": "mw_tim2.channel3.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000838",
+                "name": "mw_tim2.channel4.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x2000083c",
+                "name": "mw_tim2.channel4.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000840",
+                "name": "mw_tim2.channel4.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000844",
+                "name": "mw_tim2.channel4.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000848",
+                "name": "mw_tim2.channel4.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000830",
+                "name": "mw_tim2.channel4.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000834",
+                "name": "mw_tim2.channel4.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x2000084c",
+                "name": "mw_tim2.channel4.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200007ce",
+                "name": "mw_tim2.errorStatus",
+                "type": 1
+            },
+            {
+                "address": "0x200007cf",
+                "name": "mw_tim2.firstIndexReceivedStatus",
+                "type": 1
+            },
+            {
+                "address": "0x200007cc",
+                "name": "mw_tim2.isCenterAlignedMode",
+                "type": 1
+            },
+            {
+                "address": "0x200007c8",
+                "name": "mw_tim2.PeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200007cd",
+                "name": "mw_tim2.repetitionCounter",
+                "type": 1
+            },
+            {
+                "address": "0x200008a4",
+                "name": "NADC1ErrorCount",
+                "type": 3,
+                "checked": true
+            },
+            {
+                "address": "0x200008a6",
+                "name": "NADC2ErrorCount",
+                "type": 3,
+                "checked": true
+            },
+            {
+                "address": "0x20000980",
+                "name": "need2runFlags[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000898",
+                "name": "NPot",
+                "type": 9
+            },
+            {
+                "address": "0x08009d60",
+                "name": "OFFSET_TAB_CCMRx[0]",
+                "type": 1
+            },
+            {
+                "address": "0x2000098c",
+                "name": "profiler_initialized",
+                "type": 1
+            },
+            {
+                "address": "0x200006c0",
+                "name": "rtNaNF",
+                "type": 9
+            },
+            {
+                "address": "0x20000986",
+                "name": "runModel",
+                "type": 1
+            },
+            {
+                "address": "0x20000990",
+                "name": "schdl_counter",
+                "type": 5
+            },
+            {
+                "address": "0x20000994",
+                "name": "schdl_counter_max",
+                "type": 5
+            },
+            {
+                "address": "0x08009d6c",
+                "name": "SHIFT_TAB_OCxx[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000985",
+                "name": "stopRequested",
+                "type": 1
+            },
+            {
+                "address": "0x200006cc",
+                "name": "SystemCoreClock",
+                "type": 5
+            },
+            {
+                "address": "0x20000998",
+                "name": "taskToSchedule",
+                "type": 5
+            },
+            {
+                "address": "0x2000089c",
+                "name": "TESCBoard",
+                "type": 9
+            },
+            {
+                "address": "0x08009d78",
+                "name": "USART_PRESCALER_TAB[0]",
+                "type": 5
+            },
+            {
+                "address": "0x200009e8",
+                "name": "uwTick",
+                "type": 5
+            },
+            {
+                "address": "0x200006c8",
+                "name": "uwTickFreq",
+                "type": 5
+            },
+            {
+                "address": "0x200006c4",
+                "name": "uwTickPrio",
+                "type": 5
+            },
+            {
+                "address": "0x200008a0",
+                "name": "VBus",
+                "type": 9
+            }
+        ],
+        "expand": false,
+        "filename": "FOC.elf",
+        "exeModifiedTime": 1792274249004,
+        "configLastUpdate": 1792274277128
+    },
+    {
+        "id": "70e65b85ba0d87fb",
+        "type": "exe-config",
+        "name": "Tune_Parameters",
+        "exefile": "C:\\Users\\sakee\\OneDrive\\Desktop\\STM32_Projects\\FOC\\Build\\FOC.elf",
+        "exefolder": "C:\\Users\\sakee\\OneDrive\\Desktop\\STM32_Projects\\FOC\\Build",
+        "exevariablelist": [
+            {
+                "address": "0x080156e0",
+                "name": "AHBPrescTable[0]",
+                "type": 1
+            },
+            {
+                "address": "0x080156f0",
+                "name": "APBPrescTable[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000954",
+                "name": "BLed1000ms",
+                "type": 1
+            },
+            {
+                "address": "0x20000955",
+                "name": "BLed100ms",
+                "type": 1
+            },
+            {
+                "address": "0x20000956",
+                "name": "BLed500ms",
+                "type": 1
+            },
+            {
+                "address": "0x08015664",
+                "name": "calibrationSupportedRxPacket[0].inputHandler",
+                "type": 5
+            },
+            {
+                "address": "0x08015668",
+                "name": "calibrationSupportedRxPacket[0].outputHandler",
+                "type": 5
+            },
+            {
+                "address": "0x08015660",
+                "name": "calibrationSupportedRxPacket[0].PID",
+                "type": 2
+            },
+            {
+                "address": "0x08015560",
+                "name": "CHANNEL_OFFSET_TAB[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000930",
+                "name": "currentTime",
+                "type": 10
+            },
+            {
+                "address": "0x20000be4",
+                "name": "daqLock",
+                "type": 5
+            },
+            {
+                "address": "0x080155c8",
+                "name": "daqSupportedRxPacket[0].inputHandler",
+                "type": 5
+            },
+            {
+                "address": "0x080155cc",
+                "name": "daqSupportedRxPacket[0].outputHandler",
+                "type": 5
+            },
+            {
+                "address": "0x080155c4",
+                "name": "daqSupportedRxPacket[0].PID",
+                "type": 2
+            },
+            {
+                "address": "0x20000710",
+                "name": "drvID",
+                "type": 6
+            },
+            {
+                "address": "0x200016a4",
+                "name": "firstRxCounterReceived",
+                "type": 6
+            },
+            {
+                "address": "0x20000988",
+                "name": "FOC_B.AnalogtoDigitalConverter_o2",
+                "type": 3
+            },
+            {
+                "address": "0x2000098a",
+                "name": "FOC_B.AnalogtoDigitalConverter_o2_n",
+                "type": 3
+            },
+            {
+                "address": "0x20000970",
+                "name": "FOC_B.Gain[0]",
+                "type": 9
+            },
+            {
+                "address": "0x20000958",
+                "name": "FOC_B.Out",
+                "type": 10
+            },
+            {
+                "address": "0x2000097c",
+                "name": "FOC_B.OutportBufferForIPhaseV",
+                "type": 9
+            },
+            {
+                "address": "0x20000980",
+                "name": "FOC_B.OutportBufferForIPhaseW",
+                "type": 9
+            },
+            {
+                "address": "0x20000960",
+                "name": "FOC_B.RateTransition",
+                "type": 9
+            },
+            {
+                "address": "0x20000964",
+                "name": "FOC_B.RateTransition1",
+                "type": 9
+            },
+            {
+                "address": "0x20000968",
+                "name": "FOC_B.RateTransition2",
+                "type": 9
+            },
+            {
+                "address": "0x20000984",
+                "name": "FOC_B.RateTransition3",
+                "type": 3
+            },
+            {
+                "address": "0x20000986",
+                "name": "FOC_B.RateTransition4",
+                "type": 3
+            },
+            {
+                "address": "0x2000096c",
+                "name": "FOC_B.RateTransition_j",
+                "type": 9
+            },
+            {
+                "address": "0x20000a14",
+                "name": "FOC_DW.clockTickCounter",
+                "type": 6
+            },
+            {
+                "address": "0x20000a18",
+                "name": "FOC_DW.clockTickCounter_h",
+                "type": 6
+            },
+            {
+                "address": "0x20000a1c",
+                "name": "FOC_DW.clockTickCounter_l",
+                "type": 6
+            },
+            {
+                "address": "0x20000a2e",
+                "name": "FOC_DW.EnabledSubsystem_SubsysRanBC",
+                "type": 2
+            },
+            {
+                "address": "0x20000a31",
+                "name": "FOC_DW.FunctionCallSubsystem_SubsysR_e",
+                "type": 2
+            },
+            {
+                "address": "0x20000a2d",
+                "name": "FOC_DW.FunctionCallSubsystem_SubsysRan",
+                "type": 2
+            },
+            {
+                "address": "0x20000a22",
+                "name": "FOC_DW.Memory1_PreviousInput",
+                "type": 3
+            },
+            {
+                "address": "0x200009f0",
+                "name": "FOC_DW.Memory_PreviousInput",
+                "type": 10
+            },
+            {
+                "address": "0x20000a26",
+                "name": "FOC_DW.Memory_PreviousInput_l",
+                "type": 3
+            },
+            {
+                "address": "0x2000099c",
+                "name": "FOC_DW.obj.ADCHandle",
+                "type": 5
+            },
+            {
+                "address": "0x200009a0",
+                "name": "FOC_DW.obj.ADCInternalBuffer[0]",
+                "type": 3
+            },
+            {
+                "address": "0x20000994",
+                "name": "FOC_DW.obj.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x20000998",
+                "name": "FOC_DW.obj.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x20000990",
+                "name": "FOC_DW.obj.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200009b0",
+                "name": "FOC_DW.obj_a.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x200009b4",
+                "name": "FOC_DW.obj_a.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200009ac",
+                "name": "FOC_DW.obj_a.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200009b8",
+                "name": "FOC_DW.obj_a.TimerHandle",
+                "type": 5
+            },
+            {
+                "address": "0x200009e8",
+                "name": "FOC_DW.obj_h.ADCHandle",
+                "type": 5
+            },
+            {
+                "address": "0x200009e0",
+                "name": "FOC_DW.obj_h.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x200009e4",
+                "name": "FOC_DW.obj_h.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200009dc",
+                "name": "FOC_DW.obj_h.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200009d8",
+                "name": "FOC_DW.obj_l.ADCHandle",
+                "type": 5
+            },
+            {
+                "address": "0x200009d0",
+                "name": "FOC_DW.obj_l.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x200009d4",
+                "name": "FOC_DW.obj_l.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200009cc",
+                "name": "FOC_DW.obj_l.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200009c0",
+                "name": "FOC_DW.obj_o.isInitialized",
+                "type": 6
+            },
+            {
+                "address": "0x200009c4",
+                "name": "FOC_DW.obj_o.isSetupComplete",
+                "type": 1
+            },
+            {
+                "address": "0x200009bc",
+                "name": "FOC_DW.obj_o.matlabCodegenIsDeleted",
+                "type": 1
+            },
+            {
+                "address": "0x200009c8",
+                "name": "FOC_DW.obj_o.TimerHandle",
+                "type": 5
+            },
+            {
+                "address": "0x20000a2c",
+                "name": "FOC_DW.Output_DSTATE",
+                "type": 1
+            },
+            {
+                "address": "0x20000a0c",
+                "name": "FOC_DW.RateTransition1_Buffer",
+                "type": 9
+            },
+            {
+                "address": "0x20000a10",
+                "name": "FOC_DW.RateTransition2_Buffer",
+                "type": 9
+            },
+            {
+                "address": "0x20000a28",
+                "name": "FOC_DW.RateTransition3_Buffer",
+                "type": 3
+            },
+            {
+                "address": "0x20000a2a",
+                "name": "FOC_DW.RateTransition4_Buffer",
+                "type": 3
+            },
+            {
+                "address": "0x20000a04",
+                "name": "FOC_DW.RateTransition_Buffer",
+                "type": 9
+            },
+            {
+                "address": "0x20000a08",
+                "name": "FOC_DW.RateTransition_Buffer_b",
+                "type": 9
+            },
+            {
+                "address": "0x20000a00",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_a",
+                "type": 9
+            },
+            {
+                "address": "0x20000a24",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_b",
+                "type": 3
+            },
+            {
+                "address": "0x20000a20",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_g",
+                "type": 3
+            },
+            {
+                "address": "0x200009fc",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystem_h",
+                "type": 9
+            },
+            {
+                "address": "0x200009f8",
+                "name": "FOC_DW.TmpRTBAtFunctionCallSubsystemOu",
+                "type": 9
+            },
+            {
+                "address": "0x20000a33",
+                "name": "FOC_DW.u00ms_SubsysRanBC",
+                "type": 2
+            },
+            {
+                "address": "0x20000a34",
+                "name": "FOC_DW.u00ms_SubsysRanBC_p",
+                "type": 2
+            },
+            {
+                "address": "0x20000a2f",
+                "name": "FOC_DW.u0us_SubsysRanBC",
+                "type": 2
+            },
+            {
+                "address": "0x20000a30",
+                "name": "FOC_DW.ums_SubsysRanBC",
+                "type": 2
+            },
+            {
+                "address": "0x20000a32",
+                "name": "FOC_DW.us_SubsysRanBC",
+                "type": 2
+            },
+            {
+                "address": "0x08015568",
+                "name": "FOC_M",
+                "type": 5
+            },
+            {
+                "address": "0x20000a40",
+                "name": "FOC_M_.errorStatus",
+                "type": 5
+            },
+            {
+                "address": "0x20000a44",
+                "name": "FOC_M_.extModeInfo",
+                "type": 5
+            },
+            {
+                "address": "0x20000a48",
+                "name": "FOC_M_.Sizes.checksums[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20000a58",
+                "name": "FOC_M_.SpecialInfo.mappingInfo",
+                "type": 5
+            },
+            {
+                "address": "0x20000a68",
+                "name": "FOC_M_.Timing.clockTick0",
+                "type": 5
+            },
+            {
+                "address": "0x20000a78",
+                "name": "FOC_M_.Timing.clockTick1",
+                "type": 5
+            },
+            {
+                "address": "0x20000a7c",
+                "name": "FOC_M_.Timing.clockTick2",
+                "type": 5
+            },
+            {
+                "address": "0x20000a80",
+                "name": "FOC_M_.Timing.clockTick3",
+                "type": 5
+            },
+            {
+                "address": "0x20000a84",
+                "name": "FOC_M_.Timing.clockTick4",
+                "type": 5
+            },
+            {
+                "address": "0x20000a88",
+                "name": "FOC_M_.Timing.clockTick5",
+                "type": 5
+            },
+            {
+                "address": "0x20000a96",
+                "name": "FOC_M_.Timing.RateInteraction.TID0_2",
+                "type": 1
+            },
+            {
+                "address": "0x20000a97",
+                "name": "FOC_M_.Timing.RateInteraction.TID0_4",
+                "type": 1
+            },
+            {
+                "address": "0x20000a70",
+                "name": "FOC_M_.Timing.stepSize0",
+                "type": 10
+            },
+            {
+                "address": "0x20000aa0",
+                "name": "FOC_M_.Timing.stopRequestedFlag",
+                "type": 1
+            },
+            {
+                "address": "0x20000a8c",
+                "name": "FOC_M_.Timing.TaskCounters.TID[0]",
+                "type": 3
+            },
+            {
+                "address": "0x20000a60",
+                "name": "FOC_M_.Timing.taskTime0",
+                "type": 10
+            },
+            {
+                "address": "0x20000a98",
+                "name": "FOC_M_.Timing.tFinal",
+                "type": 10
+            },
+            {
+                "address": "0x20000630",
+                "name": "FOC_P._Gain",
+                "type": 9
+            },
+            {
+                "address": "0x20000660",
+                "name": "FOC_P._Gain_k",
+                "type": 9
+            },
+            {
+                "address": "0x200006a8",
+                "name": "FOC_P._Y0",
+                "type": 5
+            },
+            {
+                "address": "0x200006ac",
+                "name": "FOC_P.adc1status_Y0",
+                "type": 3
+            },
+            {
+                "address": "0x200006ae",
+                "name": "FOC_P.adc2status_Y0",
+                "type": 3
+            },
+            {
+                "address": "0x20000644",
+                "name": "FOC_P.AddConstant_Bias",
+                "type": 9
+            },
+            {
+                "address": "0x20000540",
+                "name": "FOC_P.BEnableLedBlink",
+                "type": 1,
+                "checked": true
+            },
+            {
+                "address": "0x200006bc",
+                "name": "FOC_P.BLed1000ms_InitialValue",
+                "type": 1
+            },
+            {
+                "address": "0x200006bd",
+                "name": "FOC_P.BLed100ms_InitialValue",
+                "type": 1
+            },
+            {
+                "address": "0x200006be",
+                "name": "FOC_P.BLed500ms_InitialValue",
+                "type": 1
+            },
+            {
+                "address": "0x20000560",
+                "name": "FOC_P.CompareToConstant_const",
+                "type": 10
+            },
+            {
+                "address": "0x20000650",
+                "name": "FOC_P.Constant11_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000638",
+                "name": "FOC_P.Constant12_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000634",
+                "name": "FOC_P.Constant13_Value",
+                "type": 9
+            },
+            {
+                "address": "0x200005e0",
+                "name": "FOC_P.Constant1_Value",
+                "type": 10
+            },
+            {
+                "address": "0x20000658",
+                "name": "FOC_P.Constant1_Value_d",
+                "type": 9
+            },
+            {
+                "address": "0x200005e8",
+                "name": "FOC_P.Constant1_Value_i",
+                "type": 10
+            },
+            {
+                "address": "0x20000628",
+                "name": "FOC_P.Constant1_Value_l",
+                "type": 9
+            },
+            {
+                "address": "0x20000618",
+                "name": "FOC_P.Constant2_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000608",
+                "name": "FOC_P.Constant3_Value",
+                "type": 10
+            },
+            {
+                "address": "0x2000062c",
+                "name": "FOC_P.Constant3_Value_h",
+                "type": 9
+            },
+            {
+                "address": "0x2000064c",
+                "name": "FOC_P.Constant4_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000654",
+                "name": "FOC_P.Constant5_Value",
+                "type": 9
+            },
+            {
+                "address": "0x2000061c",
+                "name": "FOC_P.Constant_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000648",
+                "name": "FOC_P.Constant_Value_d",
+                "type": 9
+            },
+            {
+                "address": "0x2000063c",
+                "name": "FOC_P.Constant_Value_k",
+                "type": 9
+            },
+            {
+                "address": "0x20000640",
+                "name": "FOC_P.Constant_Value_l",
+                "type": 9
+            },
+            {
+                "address": "0x200006bf",
+                "name": "FOC_P.Constant_Value_p",
+                "type": 1
+            },
+            {
+                "address": "0x200006c0",
+                "name": "FOC_P.FixPtConstant_Value",
+                "type": 1
+            },
+            {
+                "address": "0x20000614",
+                "name": "FOC_P.Gain1_Gain",
+                "type": 9
+            },
+            {
+                "address": "0x20000620",
+                "name": "FOC_P.Gain2_Gain",
+                "type": 9
+            },
+            {
+                "address": "0x20000610",
+                "name": "FOC_P.Gain_Gain",
+                "type": 9
+            },
+            {
+                "address": "0x2000065c",
+                "name": "FOC_P.Gain_Gain_k",
+                "type": 9
+            },
+            {
+                "address": "0x200006a4",
+                "name": "FOC_P.Gain_Gain_n",
+                "type": 5
+            },
+            {
+                "address": "0x2000068c",
+                "name": "FOC_P.IPhaseU_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000664",
+                "name": "FOC_P.IPhaseU_Y0",
+                "type": 9
+            },
+            {
+                "address": "0x20000670",
+                "name": "FOC_P.IPhaseU_Y0_i",
+                "type": 9
+            },
+            {
+                "address": "0x20000690",
+                "name": "FOC_P.IPhaseV_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000668",
+                "name": "FOC_P.IPhaseV_Y0",
+                "type": 9
+            },
+            {
+                "address": "0x20000674",
+                "name": "FOC_P.IPhaseV_Y0_h",
+                "type": 9
+            },
+            {
+                "address": "0x20000694",
+                "name": "FOC_P.IPhaseW_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x2000066c",
+                "name": "FOC_P.IPhaseW_Y0",
+                "type": 9
+            },
+            {
+                "address": "0x20000678",
+                "name": "FOC_P.IPhaseW_Y0_g",
+                "type": 9
+            },
+            {
+                "address": "0x200006b2",
+                "name": "FOC_P.Memory1_InitialCondition",
+                "type": 3
+            },
+            {
+                "address": "0x200005f8",
+                "name": "FOC_P.Memory_InitialCondition",
+                "type": 10
+            },
+            {
+                "address": "0x200006b6",
+                "name": "FOC_P.Memory_InitialCondition_c",
+                "type": 3
+            },
+            {
+                "address": "0x200006b8",
+                "name": "FOC_P.NADC1ErrorCount_InitialValue",
+                "type": 3
+            },
+            {
+                "address": "0x200006ba",
+                "name": "FOC_P.NADC2ErrorCount_InitialValue",
+                "type": 3
+            },
+            {
+                "address": "0x20000000",
+                "name": "FOC_P.NADCCurrentGain",
+                "type": 9
+            },
+            {
+                "address": "0x20000004",
+                "name": "FOC_P.NADCOffsetPhaseU",
+                "type": 9,
+                "checked": true
+            },
+            {
+                "address": "0x20000008",
+                "name": "FOC_P.NADCOffsetPhaseV",
+                "type": 9,
+                "checked": true
+            },
+            {
+                "address": "0x2000000c",
+                "name": "FOC_P.NADCOffsetPhaseW",
+                "type": 9,
+                "checked": true
+            },
+            {
+                "address": "0x20000698",
+                "name": "FOC_P.NPot_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x200005d8",
+                "name": "FOC_P.Out1_Y0",
+                "type": 10
+            },
+            {
+                "address": "0x200006c1",
+                "name": "FOC_P.Output_InitialCondition",
+                "type": 1
+            },
+            {
+                "address": "0x20000578",
+                "name": "FOC_P.PulseGenerator1_Amp",
+                "type": 10
+            },
+            {
+                "address": "0x20000598",
+                "name": "FOC_P.PulseGenerator1_Amp_d",
+                "type": 10
+            },
+            {
+                "address": "0x200005b8",
+                "name": "FOC_P.PulseGenerator1_Amp_p",
+                "type": 10
+            },
+            {
+                "address": "0x20000588",
+                "name": "FOC_P.PulseGenerator1_Duty",
+                "type": 10
+            },
+            {
+                "address": "0x200005a8",
+                "name": "FOC_P.PulseGenerator1_Duty_c",
+                "type": 10
+            },
+            {
+                "address": "0x200005c8",
+                "name": "FOC_P.PulseGenerator1_Duty_n",
+                "type": 10
+            },
+            {
+                "address": "0x20000580",
+                "name": "FOC_P.PulseGenerator1_Period",
+                "type": 10
+            },
+            {
+                "address": "0x200005a0",
+                "name": "FOC_P.PulseGenerator1_Period_o",
+                "type": 10
+            },
+            {
+                "address": "0x200005c0",
+                "name": "FOC_P.PulseGenerator1_Period_o5",
+                "type": 10
+            },
+            {
+                "address": "0x20000590",
+                "name": "FOC_P.PulseGenerator1_PhaseDelay",
+                "type": 10
+            },
+            {
+                "address": "0x200005b0",
+                "name": "FOC_P.PulseGenerator1_PhaseDelay_i",
+                "type": 10
+            },
+            {
+                "address": "0x200005d0",
+                "name": "FOC_P.PulseGenerator1_PhaseDelay_m",
+                "type": 10
+            },
+            {
+                "address": "0x20000548",
+                "name": "FOC_P.RepeatingSequenceStair_OutValue[0]",
+                "type": 10
+            },
+            {
+                "address": "0x20000010",
+                "name": "FOC_P.RNTCBreakpoints[0]",
+                "type": 9
+            },
+            {
+                "address": "0x20000600",
+                "name": "FOC_P.Switch1_Threshold",
+                "type": 10
+            },
+            {
+                "address": "0x200005f0",
+                "name": "FOC_P.Switch_Threshold",
+                "type": 10
+            },
+            {
+                "address": "0x2000069c",
+                "name": "FOC_P.TESCBoard_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000568",
+                "name": "FOC_P.Timer_tSampleTime",
+                "type": 10
+            },
+            {
+                "address": "0x200006b4",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsys_jxkx",
+                "type": 3
+            },
+            {
+                "address": "0x200006b0",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsyst_jxk",
+                "type": 3
+            },
+            {
+                "address": "0x20000684",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsyste_jx",
+                "type": 9
+            },
+            {
+                "address": "0x20000680",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsystem_j",
+                "type": 9
+            },
+            {
+                "address": "0x2000067c",
+                "name": "FOC_P.TmpRTBAtFunctionCallSubsystemOu",
+                "type": 9
+            },
+            {
+                "address": "0x200002a8",
+                "name": "FOC_P.TNTCTable[0]",
+                "type": 9
+            },
+            {
+                "address": "0x20000688",
+                "name": "FOC_P.us_Value",
+                "type": 9
+            },
+            {
+                "address": "0x200006a0",
+                "name": "FOC_P.VBus_InitialValue",
+                "type": 9
+            },
+            {
+                "address": "0x20000624",
+                "name": "FOC_P.VoltageOffset_Value",
+                "type": 9
+            },
+            {
+                "address": "0x20000570",
+                "name": "FOC_P.WrapToZero_Threshold",
+                "type": 1
+            },
+            {
+                "address": "0x20000a38",
+                "name": "FOC_PrevZCX.FunctionCallSubsystem_Trig_ZCE",
+                "type": 1
+            },
+            {
+                "address": "0x20000b38",
+                "name": "foc_start",
+                "type": 5
+            },
+            {
+                "address": "0x2000169c",
+                "name": "forceBlocking",
+                "type": 1
+            },
+            {
+                "address": "0x20000bb8",
+                "name": "groupPacketLookup[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20001f20",
+                "name": "htim6.Channel",
+                "type": 2
+            },
+            {
+                "address": "0x20001f48",
+                "name": "htim6.ChannelNState[0]",
+                "type": 2
+            },
+            {
+                "address": "0x20001f42",
+                "name": "htim6.ChannelState[0]",
+                "type": 2
+            },
+            {
+                "address": "0x20001f4c",
+                "name": "htim6.DMABurstState",
+                "type": 2
+            },
+            {
+                "address": "0x20001f24",
+                "name": "htim6.hdma[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20001f1c",
+                "name": "htim6.Init.AutoReloadPreload",
+                "type": 5
+            },
+            {
+                "address": "0x20001f14",
+                "name": "htim6.Init.ClockDivision",
+                "type": 5
+            },
+            {
+                "address": "0x20001f0c",
+                "name": "htim6.Init.CounterMode",
+                "type": 5
+            },
+            {
+                "address": "0x20001f10",
+                "name": "htim6.Init.Period",
+                "type": 5
+            },
+            {
+                "address": "0x20001f08",
+                "name": "htim6.Init.Prescaler",
+                "type": 5
+            },
+            {
+                "address": "0x20001f18",
+                "name": "htim6.Init.RepetitionCounter",
+                "type": 5
+            },
+            {
+                "address": "0x20001f04",
+                "name": "htim6.Instance",
+                "type": 5
+            },
+            {
+                "address": "0x20001f40",
+                "name": "htim6.Lock",
+                "type": 2
+            },
+            {
+                "address": "0x20001f41",
+                "name": "htim6.State",
+                "type": 2
+            },
+            {
+                "address": "0x200016a8",
+                "name": "initialized",
+                "type": 1
+            },
+            {
+                "address": "0x200016a8",
+                "name": "initialized",
+                "type": 1
+            },
+            {
+                "address": "0x200016a8",
+                "name": "initialized",
+                "type": 1
+            },
+            {
+                "address": "0x20000938",
+                "name": "IPhaseU",
+                "type": 9
+            },
+            {
+                "address": "0x2000093c",
+                "name": "IPhaseV",
+                "type": 9
+            },
+            {
+                "address": "0x20000940",
+                "name": "IPhaseW",
+                "type": 9
+            },
+            {
+                "address": "0x20000b28",
+                "name": "isRateRunning[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000b24",
+                "name": "IsrOverrun",
+                "type": 6
+            },
+            {
+                "address": "0x200008f3",
+                "name": "mw_adc1.DataReadyBufferID",
+                "type": 1
+            },
+            {
+                "address": "0x20000904",
+                "name": "mw_adc1.DataTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x20000900",
+                "name": "mw_adc1.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200008f2",
+                "name": "mw_adc1.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000905",
+                "name": "mw_adc1.DmaTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x200008f1",
+                "name": "mw_adc1.InjectedNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x200008f6",
+                "name": "mw_adc1.InjStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200008f8",
+                "name": "mw_adc1.InternalBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200008ec",
+                "name": "mw_adc1.InternalBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200008f4",
+                "name": "mw_adc1.mode",
+                "type": 2
+            },
+            {
+                "address": "0x200008fc",
+                "name": "mw_adc1.peripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200008f5",
+                "name": "mw_adc1.RegStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200008f0",
+                "name": "mw_adc1.RegularNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x2000090f",
+                "name": "mw_adc2.DataReadyBufferID",
+                "type": 1
+            },
+            {
+                "address": "0x20000920",
+                "name": "mw_adc2.DataTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x2000091c",
+                "name": "mw_adc2.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000090e",
+                "name": "mw_adc2.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000921",
+                "name": "mw_adc2.DmaTransferMode",
+                "type": 2
+            },
+            {
+                "address": "0x2000090d",
+                "name": "mw_adc2.InjectedNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x20000912",
+                "name": "mw_adc2.InjStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000914",
+                "name": "mw_adc2.InternalBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000908",
+                "name": "mw_adc2.InternalBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000910",
+                "name": "mw_adc2.mode",
+                "type": 2
+            },
+            {
+                "address": "0x20000918",
+                "name": "mw_adc2.peripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000911",
+                "name": "mw_adc2.RegStatus",
+                "type": 2
+            },
+            {
+                "address": "0x2000090c",
+                "name": "mw_adc2.RegularNoOfConversion",
+                "type": 1
+            },
+            {
+                "address": "0x200016b8",
+                "name": "mw_ext_h",
+                "type": 5
+            },
+            {
+                "address": "0x2000085c",
+                "name": "mw_tim1.cc1Flag",
+                "type": 1
+            },
+            {
+                "address": "0x2000085d",
+                "name": "mw_tim1.cc2Flag",
+                "type": 1
+            },
+            {
+                "address": "0x2000085e",
+                "name": "mw_tim1.cc3Flag",
+                "type": 1
+            },
+            {
+                "address": "0x2000085f",
+                "name": "mw_tim1.cc4Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200007e4",
+                "name": "mw_tim1.channel1.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007e8",
+                "name": "mw_tim1.channel1.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200007ec",
+                "name": "mw_tim1.channel1.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200007f0",
+                "name": "mw_tim1.channel1.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200007f4",
+                "name": "mw_tim1.channel1.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200007dc",
+                "name": "mw_tim1.channel1.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200007e0",
+                "name": "mw_tim1.channel1.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200007f8",
+                "name": "mw_tim1.channel1.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000804",
+                "name": "mw_tim1.channel2.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000808",
+                "name": "mw_tim1.channel2.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x2000080c",
+                "name": "mw_tim1.channel2.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000810",
+                "name": "mw_tim1.channel2.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000814",
+                "name": "mw_tim1.channel2.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200007fc",
+                "name": "mw_tim1.channel2.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000800",
+                "name": "mw_tim1.channel2.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000818",
+                "name": "mw_tim1.channel2.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000824",
+                "name": "mw_tim1.channel3.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000828",
+                "name": "mw_tim1.channel3.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x2000082c",
+                "name": "mw_tim1.channel3.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000830",
+                "name": "mw_tim1.channel3.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000834",
+                "name": "mw_tim1.channel3.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x2000081c",
+                "name": "mw_tim1.channel3.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000820",
+                "name": "mw_tim1.channel3.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000838",
+                "name": "mw_tim1.channel3.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000844",
+                "name": "mw_tim1.channel4.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000848",
+                "name": "mw_tim1.channel4.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x2000084c",
+                "name": "mw_tim1.channel4.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000850",
+                "name": "mw_tim1.channel4.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000854",
+                "name": "mw_tim1.channel4.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x2000083c",
+                "name": "mw_tim1.channel4.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000840",
+                "name": "mw_tim1.channel4.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000858",
+                "name": "mw_tim1.channel4.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200007da",
+                "name": "mw_tim1.errorStatus",
+                "type": 1
+            },
+            {
+                "address": "0x200007db",
+                "name": "mw_tim1.firstIndexReceivedStatus",
+                "type": 1
+            },
+            {
+                "address": "0x200007d8",
+                "name": "mw_tim1.isCenterAlignedMode",
+                "type": 1
+            },
+            {
+                "address": "0x200007d4",
+                "name": "mw_tim1.PeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200007d9",
+                "name": "mw_tim1.repetitionCounter",
+                "type": 1
+            },
+            {
+                "address": "0x200008e8",
+                "name": "mw_tim2.cc1Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200008e9",
+                "name": "mw_tim2.cc2Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200008ea",
+                "name": "mw_tim2.cc3Flag",
+                "type": 1
+            },
+            {
+                "address": "0x200008eb",
+                "name": "mw_tim2.cc4Flag",
+                "type": 1
+            },
+            {
+                "address": "0x20000870",
+                "name": "mw_tim2.channel1.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000874",
+                "name": "mw_tim2.channel1.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000878",
+                "name": "mw_tim2.channel1.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x2000087c",
+                "name": "mw_tim2.channel1.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000880",
+                "name": "mw_tim2.channel1.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000868",
+                "name": "mw_tim2.channel1.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000086c",
+                "name": "mw_tim2.channel1.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000884",
+                "name": "mw_tim2.channel1.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000890",
+                "name": "mw_tim2.channel2.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000894",
+                "name": "mw_tim2.channel2.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x20000898",
+                "name": "mw_tim2.channel2.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x2000089c",
+                "name": "mw_tim2.channel2.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200008a0",
+                "name": "mw_tim2.channel2.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x20000888",
+                "name": "mw_tim2.channel2.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000088c",
+                "name": "mw_tim2.channel2.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200008a4",
+                "name": "mw_tim2.channel2.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200008b0",
+                "name": "mw_tim2.channel3.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200008b4",
+                "name": "mw_tim2.channel3.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200008b8",
+                "name": "mw_tim2.channel3.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200008bc",
+                "name": "mw_tim2.channel3.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200008c0",
+                "name": "mw_tim2.channel3.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200008a8",
+                "name": "mw_tim2.channel3.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200008ac",
+                "name": "mw_tim2.channel3.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200008c4",
+                "name": "mw_tim2.channel3.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x200008d0",
+                "name": "mw_tim2.channel4.buffer.bufferPtr16Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200008d4",
+                "name": "mw_tim2.channel4.buffer.bufferPtr32Bit",
+                "type": 5
+            },
+            {
+                "address": "0x200008d8",
+                "name": "mw_tim2.channel4.buffer.bufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200008dc",
+                "name": "mw_tim2.channel4.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200008e0",
+                "name": "mw_tim2.channel4.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200008c8",
+                "name": "mw_tim2.channel4.dmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200008cc",
+                "name": "mw_tim2.channel4.dmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200008e4",
+                "name": "mw_tim2.channel4.errorStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000866",
+                "name": "mw_tim2.errorStatus",
+                "type": 1
+            },
+            {
+                "address": "0x20000867",
+                "name": "mw_tim2.firstIndexReceivedStatus",
+                "type": 1
+            },
+            {
+                "address": "0x20000864",
+                "name": "mw_tim2.isCenterAlignedMode",
+                "type": 1
+            },
+            {
+                "address": "0x20000860",
+                "name": "mw_tim2.PeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000865",
+                "name": "mw_tim2.repetitionCounter",
+                "type": 1
+            },
+            {
+                "address": "0x200016f0",
+                "name": "mw_usart2.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x200016e0",
+                "name": "mw_usart2.buffer.rxBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200016e8",
+                "name": "mw_usart2.buffer.rxBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200016fc",
+                "name": "mw_usart2.buffer.sentPos",
+                "type": 5
+            },
+            {
+                "address": "0x200016f4",
+                "name": "mw_usart2.buffer.toReadPos",
+                "type": 5
+            },
+            {
+                "address": "0x200016e4",
+                "name": "mw_usart2.buffer.txBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200016ec",
+                "name": "mw_usart2.buffer.txBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x200016f8",
+                "name": "mw_usart2.buffer.writePos",
+                "type": 5
+            },
+            {
+                "address": "0x20001700",
+                "name": "mw_usart2.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x200016d8",
+                "name": "mw_usart2.disableDMAIntOnError",
+                "type": 1
+            },
+            {
+                "address": "0x200016d9",
+                "name": "mw_usart2.enableRxOrTx",
+                "type": 2
+            },
+            {
+                "address": "0x200016dc",
+                "name": "mw_usart2.errorStatus",
+                "type": 4
+            },
+            {
+                "address": "0x200016da",
+                "name": "mw_usart2.mode",
+                "type": 2
+            },
+            {
+                "address": "0x200016c4",
+                "name": "mw_usart2.peripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200016c8",
+                "name": "mw_usart2.rxdmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200016d4",
+                "name": "mw_usart2.rxdmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200016d7",
+                "name": "mw_usart2.txdmaEnabled",
+                "type": 1
+            },
+            {
+                "address": "0x200016cc",
+                "name": "mw_usart2.txdmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x200016d5",
+                "name": "mw_usart2.txdmastream",
+                "type": 1
+            },
+            {
+                "address": "0x200016d0",
+                "name": "mw_usart2.txDMATransferLength",
+                "type": 5
+            },
+            {
+                "address": "0x200016d6",
+                "name": "mw_usart2.txeEnabled",
+                "type": 1
+            },
+            {
+                "address": "0x200016de",
+                "name": "mw_usart2.uartStatus",
+                "type": 4
+            },
+            {
+                "address": "0x20000950",
+                "name": "NADC1ErrorCount",
+                "type": 3
+            },
+            {
+                "address": "0x20000952",
+                "name": "NADC2ErrorCount",
+                "type": 3
+            },
+            {
+                "address": "0x20000b30",
+                "name": "need2runFlags[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000944",
+                "name": "NPot",
+                "type": 9
+            },
+            {
+                "address": "0x08015688",
+                "name": "OFFSET_TAB_CCMRx[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000be8",
+                "name": "packetLookup",
+                "type": 5
+            },
+            {
+                "address": "0x20000be8",
+                "name": "packetLookup",
+                "type": 5
+            },
+            {
+                "address": "0x20000be8",
+                "name": "packetLookup",
+                "type": 5
+            },
+            {
+                "address": "0x20000b3c",
+                "name": "profiler_initialized",
+                "type": 1
+            },
+            {
+                "address": "0x200006c8",
+                "name": "rtNaNF",
+                "type": 9
+            },
+            {
+                "address": "0x20000b36",
+                "name": "runModel",
+                "type": 1
+            },
+            {
+                "address": "0x200016a0",
+                "name": "rxCounter",
+                "type": 3
+            },
+            {
+                "address": "0x20000c04",
+                "name": "rxFifo[0].first",
+                "type": 5
+            },
+            {
+                "address": "0x20000c08",
+                "name": "rxFifo[0].last",
+                "type": 5
+            },
+            {
+                "address": "0x20000c0c",
+                "name": "rxLock",
+                "type": 5
+            },
+            {
+                "address": "0x200016ac",
+                "name": "schdl_counter",
+                "type": 5
+            },
+            {
+                "address": "0x200016b0",
+                "name": "schdl_counter_max",
+                "type": 5
+            },
+            {
+                "address": "0x08015694",
+                "name": "SHIFT_TAB_OCxx[0]",
+                "type": 1
+            },
+            {
+                "address": "0x08015574",
+                "name": "standardSupportedRxPacket[0].inputHandler",
+                "type": 5
+            },
+            {
+                "address": "0x08015578",
+                "name": "standardSupportedRxPacket[0].outputHandler",
+                "type": 5
+            },
+            {
+                "address": "0x08015570",
+                "name": "standardSupportedRxPacket[0].PID",
+                "type": 2
+            },
+            {
+                "address": "0x200006e0",
+                "name": "startStopDaqListId",
+                "type": 6
+            },
+            {
+                "address": "0x20000b35",
+                "name": "stopRequested",
+                "type": 1
+            },
+            {
+                "address": "0x20000760",
+                "name": "SystemCoreClock",
+                "type": 5
+            },
+            {
+                "address": "0x200016b4",
+                "name": "taskToSchedule",
+                "type": 5
+            },
+            {
+                "address": "0x20000948",
+                "name": "TESCBoard",
+                "type": 9
+            },
+            {
+                "address": "0x2000169e",
+                "name": "txCounter",
+                "type": 3
+            },
+            {
+                "address": "0x20000bf0",
+                "name": "txFifo[0].first",
+                "type": 5
+            },
+            {
+                "address": "0x20000bf4",
+                "name": "txFifo[0].last",
+                "type": 5
+            },
+            {
+                "address": "0x20000c00",
+                "name": "txLock",
+                "type": 5
+            },
+            {
+                "address": "0x20000744",
+                "name": "uartObj.buffer.readPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000734",
+                "name": "uartObj.buffer.rxBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000073c",
+                "name": "uartObj.buffer.rxBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000750",
+                "name": "uartObj.buffer.sentPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000748",
+                "name": "uartObj.buffer.toReadPos",
+                "type": 5
+            },
+            {
+                "address": "0x20000738",
+                "name": "uartObj.buffer.txBufferPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000740",
+                "name": "uartObj.buffer.txBufferSize",
+                "type": 5
+            },
+            {
+                "address": "0x2000074c",
+                "name": "uartObj.buffer.writePos",
+                "type": 5
+            },
+            {
+                "address": "0x20000754",
+                "name": "uartObj.buffer.writeRollOver",
+                "type": 1
+            },
+            {
+                "address": "0x2000072c",
+                "name": "uartObj.disableDMAIntOnError",
+                "type": 1
+            },
+            {
+                "address": "0x2000072d",
+                "name": "uartObj.enableRxOrTx",
+                "type": 2
+            },
+            {
+                "address": "0x20000730",
+                "name": "uartObj.errorStatus",
+                "type": 4
+            },
+            {
+                "address": "0x2000072e",
+                "name": "uartObj.mode",
+                "type": 2
+            },
+            {
+                "address": "0x20000718",
+                "name": "uartObj.peripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x2000071c",
+                "name": "uartObj.rxdmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000728",
+                "name": "uartObj.rxdmastream",
+                "type": 1
+            },
+            {
+                "address": "0x2000072b",
+                "name": "uartObj.txdmaEnabled",
+                "type": 1
+            },
+            {
+                "address": "0x20000720",
+                "name": "uartObj.txdmaPeripheralPtr",
+                "type": 5
+            },
+            {
+                "address": "0x20000729",
+                "name": "uartObj.txdmastream",
+                "type": 1
+            },
+            {
+                "address": "0x20000724",
+                "name": "uartObj.txDMATransferLength",
+                "type": 5
+            },
+            {
+                "address": "0x2000072a",
+                "name": "uartObj.txeEnabled",
+                "type": 1
+            },
+            {
+                "address": "0x20000732",
+                "name": "uartObj.uartStatus",
+                "type": 4
+            },
+            {
+                "address": "0x200016c0",
+                "name": "UARTRxBuffer",
+                "type": 5
+            },
+            {
+                "address": "0x200016bc",
+                "name": "UARTTxBuffer",
+                "type": 5
+            },
+            {
+                "address": "0x20001704",
+                "name": "USART2ReceiveBuffer[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20001b04",
+                "name": "USART2TransmitBuffer[0]",
+                "type": 1
+            },
+            {
+                "address": "0x080156a0",
+                "name": "USART_PRESCALER_TAB[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20001f50",
+                "name": "uwTick",
+                "type": 5
+            },
+            {
+                "address": "0x2000075c",
+                "name": "uwTickFreq",
+                "type": 5
+            },
+            {
+                "address": "0x20000758",
+                "name": "uwTickPrio",
+                "type": 5
+            },
+            {
+                "address": "0x2000094c",
+                "name": "VBus",
+                "type": 9
+            },
+            {
+                "address": "0x20000b70",
+                "name": "xcpBaseRateSimulationTime",
+                "type": 10
+            },
+            {
+                "address": "0x200006dc",
+                "name": "xcpClassicTriggerArmRequest",
+                "type": 1
+            },
+            {
+                "address": "0x20000b99",
+                "name": "xcpClassicTriggerCancelRequest",
+                "type": 1
+            },
+            {
+                "address": "0x20000b94",
+                "name": "xcpClassicTriggerDelay",
+                "type": 6
+            },
+            {
+                "address": "0x20000b98",
+                "name": "xcpClassicTriggerDirection",
+                "type": 2
+            },
+            {
+                "address": "0x200006d8",
+                "name": "xcpClassicTriggerDuration",
+                "type": 5
+            },
+            {
+                "address": "0x20000b78",
+                "name": "xcpClassicTriggerEventId",
+                "type": 3
+            },
+            {
+                "address": "0x20000b90",
+                "name": "xcpClassicTriggerHoldOff",
+                "type": 5
+            },
+            {
+                "address": "0x20000b88",
+                "name": "xcpClassicTriggerLevel",
+                "type": 10
+            },
+            {
+                "address": "0x20000b9b",
+                "name": "xcpClassicTriggerMode",
+                "type": 2
+            },
+            {
+                "address": "0x20000b7c",
+                "name": "xcpClassicTriggerSignalAddress",
+                "type": 5
+            },
+            {
+                "address": "0x20000b80",
+                "name": "xcpClassicTriggerSignalAddressExtension",
+                "type": 1
+            },
+            {
+                "address": "0x20000b9a",
+                "name": "xcpClassicTriggerSource",
+                "type": 2
+            },
+            {
+                "address": "0x20000b9c",
+                "name": "xcpClassicTriggerStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000714",
+                "name": "xcpCtoReservedMemPoolId",
+                "type": 6
+            },
+            {
+                "address": "0x20000714",
+                "name": "xcpCtoReservedMemPoolId",
+                "type": 6
+            },
+            {
+                "address": "0x200006e4",
+                "name": "xcpCurrentDaq.daqListId",
+                "type": 3
+            },
+            {
+                "address": "0x200006e7",
+                "name": "xcpCurrentDaq.odtEntryId",
+                "type": 1
+            },
+            {
+                "address": "0x200006e6",
+                "name": "xcpCurrentDaq.odtId",
+                "type": 1
+            },
+            {
+                "address": "0x20000b68",
+                "name": "xcpCurrentSimulationTimeInMs[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20000924",
+                "name": "xcpCustomTriggerFunction[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20000b58",
+                "name": "xcpDummyDoubleVariable",
+                "type": 10
+            },
+            {
+                "address": "0x20000bd8",
+                "name": "xcpDynamicDaqLists.daq",
+                "type": 5
+            },
+            {
+                "address": "0x20000bdc",
+                "name": "xcpDynamicDaqLists.daqCount",
+                "type": 3
+            },
+            {
+                "address": "0x20000bde",
+                "name": "xcpDynamicDaqLists.firstAvailableDaqPid",
+                "type": 1
+            },
+            {
+                "address": "0x20000bdf",
+                "name": "xcpDynamicDaqLists.firstAvailableStimPid",
+                "type": 1
+            },
+            {
+                "address": "0x200006ec",
+                "name": "xcpEventCustomMemoryManager.allocHandler",
+                "type": 5
+            },
+            {
+                "address": "0x200006e8",
+                "name": "xcpEventCustomMemoryManager.eventId",
+                "type": 3
+            },
+            {
+                "address": "0x200006f0",
+                "name": "xcpEventCustomMemoryManager.freeHandler",
+                "type": 5
+            },
+            {
+                "address": "0x200006d0",
+                "name": "xcpExtmodeFinalSimulationTime",
+                "type": 10
+            },
+            {
+                "address": "0x20000b54",
+                "name": "xcpExtmodeSimulationComplete",
+                "type": 1
+            },
+            {
+                "address": "0x20000bb0",
+                "name": "xcpForcedTriggerEnabled",
+                "type": 1
+            },
+            {
+                "address": "0x20000bb1",
+                "name": "xcpForceTriggerEnableRequest",
+                "type": 1
+            },
+            {
+                "address": "0x20000cec",
+                "name": "xcpMemCustomPoolDescriptors[0].allocHandler",
+                "type": 5
+            },
+            {
+                "address": "0x20000cf0",
+                "name": "xcpMemCustomPoolDescriptors[0].freeHandler",
+                "type": 5
+            },
+            {
+                "address": "0x20001698",
+                "name": "xcpMemLock",
+                "type": 5
+            },
+            {
+                "address": "0x200006f8",
+                "name": "xcpMemMainBlockSizes[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20000704",
+                "name": "xcpMemMainBlocksNumber[0]",
+                "type": 5
+            },
+            {
+                "address": "0x20000cf4",
+                "name": "xcpMemMainChunk[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20000c20",
+                "name": "xcpMemPoolDescriptors[0].blockSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000c18",
+                "name": "xcpMemPoolDescriptors[0].freeBlocksCount",
+                "type": 5
+            },
+            {
+                "address": "0x20000c14",
+                "name": "xcpMemPoolDescriptors[0].head",
+                "type": 5
+            },
+            {
+                "address": "0x20000c28",
+                "name": "xcpMemPoolDescriptors[0].lock",
+                "type": 5
+            },
+            {
+                "address": "0x20000c24",
+                "name": "xcpMemPoolDescriptors[0].poolSize",
+                "type": 5
+            },
+            {
+                "address": "0x20000c1c",
+                "name": "xcpMemPoolDescriptors[0].totalBlocksCount",
+                "type": 5
+            },
+            {
+                "address": "0x200011d4",
+                "name": "xcpMemReservedPoolsChunk[0]",
+                "type": 1
+            },
+            {
+                "address": "0x20001694",
+                "name": "xcpMemReservedPoolsChunkUsedBytes",
+                "type": 5
+            },
+            {
+                "address": "0x20000b40",
+                "name": "xcpModelChecksum0",
+                "type": 5
+            },
+            {
+                "address": "0x20000b44",
+                "name": "xcpModelChecksum1",
+                "type": 5
+            },
+            {
+                "address": "0x20000b48",
+                "name": "xcpModelChecksum2",
+                "type": 5
+            },
+            {
+                "address": "0x20000b4c",
+                "name": "xcpModelChecksum3",
+                "type": 5
+            },
+            {
+                "address": "0x20000b50",
+                "name": "xcpModelIntegerCode",
+                "type": 5
+            },
+            {
+                "address": "0x20000b3d",
+                "name": "xcpModelStartRequest",
+                "type": 1
+            },
+            {
+                "address": "0x20000b3f",
+                "name": "xcpModelStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000b3e",
+                "name": "xcpModelStopRequest",
+                "type": 1
+            },
+            {
+                "address": "0x20000bc8",
+                "name": "xcpMta.address",
+                "type": 5
+            },
+            {
+                "address": "0x20000bcc",
+                "name": "xcpMta.addressExtension",
+                "type": 1
+            },
+            {
+                "address": "0x20000ba9",
+                "name": "xcpOldClassicTriggerSource",
+                "type": 2
+            },
+            {
+                "address": "0x20000ba0",
+                "name": "xcpOldSignalValue",
+                "type": 10
+            },
+            {
+                "address": "0x20000ba8",
+                "name": "xcpOldSignalValueAvailable",
+                "type": 1
+            },
+            {
+                "address": "0x20000bb5",
+                "name": "xcpResourceProtectionStatus",
+                "type": 1
+            },
+            {
+                "address": "0x20000be0",
+                "name": "xcpRunningEventCounter",
+                "type": 5
+            },
+            {
+                "address": "0x20000bb6",
+                "name": "xcpSessionConfigurationId",
+                "type": 3
+            },
+            {
+                "address": "0x20000bb4",
+                "name": "xcpSessionStatus",
+                "type": 1
+            },
+            {
+                "address": "0x20000bab",
+                "name": "xcpSignalTriggerFired",
+                "type": 1
+            },
+            {
+                "address": "0x20000bb3",
+                "name": "xcpStatus",
+                "type": 2
+            },
+            {
+                "address": "0x20000bac",
+                "name": "xcpTriggerCount",
+                "type": 5
+            },
+            {
+                "address": "0x20000baa",
+                "name": "xcpTriggerEnabled",
+                "type": 1
+            },
+            {
+                "address": "0x20000bd0",
+                "name": "xcpUploadSize",
+                "type": 1
+            }
+        ],
+        "expand": false,
+        "filename": "FOC.elf",
+        "exeModifiedTime": 1792276650368,
+        "configLastUpdate": 1792276893062
+    },
+    {
+        "id": "17d09b07.741a55",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "43384b9fa058ca1c",
+        "type": "global-config",
+        "env": [],
+        "modules": {
+            "@stm32/node-red-contrib-stm32cubemonitor": "2.8.2",
+            "node-red-dashboard": "3.6.6"
+        }
+    }
+]
