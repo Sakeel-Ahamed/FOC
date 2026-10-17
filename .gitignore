@@ -18,6 +18,8 @@ Build/*.asv
 *.mat
 *.dmr
 *.autosave
+*.ioctmp
+*.ioctmprsv
 
 # Keep these source files
 !Build/loadall.m

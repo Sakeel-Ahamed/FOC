@@ -73,4 +73,20 @@
     <Description>Phase W Current</Description>
   </Signal>
 
+  <Signal Name="NADC1ErrorCount">
+    <DataType>uint16</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>65535</Max>
+    <Description>ADC1 Error Count</Description>
+  </Signal>
+
+  <Signal Name="NADC2ErrorCount">
+    <DataType>uint16</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>65535</Max>
+    <Description>ADC2 Error Count</Description>
+  </Signal>
+
 </SignalDefinitions>
