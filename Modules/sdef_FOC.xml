@@ -89,4 +89,31 @@
     <Description>ADC2 Error Count</Description>
   </Signal>
 
+  <Signal Name="t50usExecTime">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-10000</Min>
+    <Max>10000</Max>
+    <Unit>us</Unit>
+    <Description>50us Execution Time</Description>
+  </Signal>
+
+  <Signal Name="t50usExecTimeMin">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-10000</Min>
+    <Max>10000</Max>
+    <Unit>us</Unit>
+    <Description>50us Execution Time Minimum</Description>
+  </Signal>
+
+  <Signal Name="t50usExecTimeMax">
+    <DataType>single</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>-10000</Min>
+    <Max>10000</Max>
+    <Unit>us</Unit>
+    <Description>50us Execution Time Maximum</Description>
+  </Signal>
+
 </SignalDefinitions>
