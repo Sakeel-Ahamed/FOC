@@ -344,6 +344,207 @@ void MX_ADC2_Init(void)
 }
 
 /**
+  * @brief COMP1 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_COMP1_Init(void)
+{
+
+  /* USER CODE BEGIN COMP1_Init 0 */
+
+  /* USER CODE END COMP1_Init 0 */
+
+  LL_COMP_InitTypeDef COMP_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+  /**COMP1 GPIO Configuration
+  PA1   ------> COMP1_INP
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN COMP1_Init 1 */
+
+  /* USER CODE END COMP1_Init 1 */
+  COMP_InitStruct.InputPlus = LL_COMP_INPUT_PLUS_IO1;
+  COMP_InitStruct.InputMinus = LL_COMP_INPUT_MINUS_DAC3_CH1;
+  COMP_InitStruct.InputHysteresis = LL_COMP_HYSTERESIS_NONE;
+  COMP_InitStruct.OutputPolarity = LL_COMP_OUTPUTPOL_NONINVERTED;
+  COMP_InitStruct.OutputBlankingSource = LL_COMP_BLANKINGSRC_NONE;
+  LL_COMP_Init(COMP1, &COMP_InitStruct);
+
+  /* Wait loop initialization and execution */
+  /* Note: Variable divided by 2 to compensate partially CPU processing cycles */
+  __IO uint32_t wait_loop_index = 0;
+  wait_loop_index = (LL_COMP_DELAY_VOLTAGE_SCALER_STAB_US * (SystemCoreClock / (1000000 * 2)));
+  while(wait_loop_index != 0)
+  {
+    wait_loop_index--;
+  }
+  LL_EXTI_DisableEvent_0_31(LL_EXTI_LINE_21);
+  LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_21);
+  /* USER CODE BEGIN COMP1_Init 2 */
+
+  /* USER CODE END COMP1_Init 2 */
+
+}
+
+/**
+  * @brief COMP2 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_COMP2_Init(void)
+{
+
+  /* USER CODE BEGIN COMP2_Init 0 */
+
+  /* USER CODE END COMP2_Init 0 */
+
+  LL_COMP_InitTypeDef COMP_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOA);
+  /**COMP2 GPIO Configuration
+  PA7   ------> COMP2_INP
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_7;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN COMP2_Init 1 */
+
+  /* USER CODE END COMP2_Init 1 */
+  COMP_InitStruct.InputPlus = LL_COMP_INPUT_PLUS_IO1;
+  COMP_InitStruct.InputMinus = LL_COMP_INPUT_MINUS_DAC3_CH2;
+  COMP_InitStruct.InputHysteresis = LL_COMP_HYSTERESIS_NONE;
+  COMP_InitStruct.OutputPolarity = LL_COMP_OUTPUTPOL_NONINVERTED;
+  COMP_InitStruct.OutputBlankingSource = LL_COMP_BLANKINGSRC_NONE;
+  LL_COMP_Init(COMP2, &COMP_InitStruct);
+
+  /* Wait loop initialization and execution */
+  /* Note: Variable divided by 2 to compensate partially CPU processing cycles */
+  __IO uint32_t wait_loop_index = 0;
+  wait_loop_index = (LL_COMP_DELAY_VOLTAGE_SCALER_STAB_US * (SystemCoreClock / (1000000 * 2)));
+  while(wait_loop_index != 0)
+  {
+    wait_loop_index--;
+  }
+  LL_EXTI_DisableEvent_0_31(LL_EXTI_LINE_22);
+  LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_22);
+  /* USER CODE BEGIN COMP2_Init 2 */
+
+  /* USER CODE END COMP2_Init 2 */
+
+}
+
+/**
+  * @brief COMP4 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_COMP4_Init(void)
+{
+
+  /* USER CODE BEGIN COMP4_Init 0 */
+
+  /* USER CODE END COMP4_Init 0 */
+
+  LL_COMP_InitTypeDef COMP_InitStruct = {0};
+
+  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_GPIOB);
+  /**COMP4 GPIO Configuration
+  PB0   ------> COMP4_INP
+  */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_0;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_ANALOG;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /* USER CODE BEGIN COMP4_Init 1 */
+
+  /* USER CODE END COMP4_Init 1 */
+  COMP_InitStruct.InputPlus = LL_COMP_INPUT_PLUS_IO1;
+  COMP_InitStruct.InputMinus = LL_COMP_INPUT_MINUS_DAC3_CH2;
+  COMP_InitStruct.InputHysteresis = LL_COMP_HYSTERESIS_NONE;
+  COMP_InitStruct.OutputPolarity = LL_COMP_OUTPUTPOL_NONINVERTED;
+  COMP_InitStruct.OutputBlankingSource = LL_COMP_BLANKINGSRC_NONE;
+  LL_COMP_Init(COMP4, &COMP_InitStruct);
+
+  /* Wait loop initialization and execution */
+  /* Note: Variable divided by 2 to compensate partially CPU processing cycles */
+  __IO uint32_t wait_loop_index = 0;
+  wait_loop_index = (LL_COMP_DELAY_VOLTAGE_SCALER_STAB_US * (SystemCoreClock / (1000000 * 2)));
+  while(wait_loop_index != 0)
+  {
+    wait_loop_index--;
+  }
+  LL_EXTI_DisableEvent_0_31(LL_EXTI_LINE_30);
+  LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_30);
+  /* USER CODE BEGIN COMP4_Init 2 */
+
+  /* USER CODE END COMP4_Init 2 */
+
+}
+
+/**
+  * @brief DAC3 Initialization Function
+  * @param None
+  * @retval None
+  */
+void MX_DAC3_Init(void)
+{
+
+  /* USER CODE BEGIN DAC3_Init 0 */
+
+  /* USER CODE END DAC3_Init 0 */
+
+  LL_DAC_InitTypeDef DAC_InitStruct = {0};
+
+  /* Peripheral clock enable */
+  LL_AHB2_GRP1_EnableClock(LL_AHB2_GRP1_PERIPH_DAC3);
+
+  /* DAC3 interrupt Init */
+  NVIC_SetPriority(TIM6_DAC_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(),15, 0));
+  NVIC_EnableIRQ(TIM6_DAC_IRQn);
+
+  /* USER CODE BEGIN DAC3_Init 1 */
+
+  /* USER CODE END DAC3_Init 1 */
+  /** DAC channel OUT1 config
+  */
+  LL_DAC_SetSignedFormat(DAC3, LL_DAC_CHANNEL_1, LL_DAC_SIGNED_FORMAT_DISABLE);
+  DAC_InitStruct.TriggerSource = LL_DAC_TRIG_SOFTWARE;
+  DAC_InitStruct.TriggerSource2 = LL_DAC_TRIG_SOFTWARE;
+  DAC_InitStruct.WaveAutoGeneration = LL_DAC_WAVE_AUTO_GENERATION_NONE;
+  DAC_InitStruct.OutputBuffer = LL_DAC_OUTPUT_BUFFER_DISABLE;
+  DAC_InitStruct.OutputConnection = LL_DAC_OUTPUT_CONNECT_INTERNAL;
+  DAC_InitStruct.OutputMode = LL_DAC_OUTPUT_MODE_NORMAL;
+  LL_DAC_Init(DAC3, LL_DAC_CHANNEL_1, &DAC_InitStruct);
+  LL_DAC_DisableTrigger(DAC3, LL_DAC_CHANNEL_1);
+  LL_DAC_DisableDMADoubleDataMode(DAC3, LL_DAC_CHANNEL_1);
+  /** DAC channel OUT2 config
+  */
+  LL_DAC_SetSignedFormat(DAC3, LL_DAC_CHANNEL_2, LL_DAC_SIGNED_FORMAT_DISABLE);
+  LL_DAC_Init(DAC3, LL_DAC_CHANNEL_2, &DAC_InitStruct);
+  LL_DAC_DisableTrigger(DAC3, LL_DAC_CHANNEL_2);
+  LL_DAC_DisableDMADoubleDataMode(DAC3, LL_DAC_CHANNEL_2);
+  /* USER CODE BEGIN DAC3_Init 2 */
+
+  /* USER CODE END DAC3_Init 2 */
+
+}
+
+/**
   * @brief OPAMP1 Initialization Function
   * @param None
   * @retval None
@@ -563,13 +764,19 @@ void MX_TIM1_Init(void)
   LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_RESET);
   LL_TIM_SetTriggerOutput2(TIM1, LL_TIM_TRGO2_RESET);
   LL_TIM_DisableMasterSlaveMode(TIM1);
+  LL_TIM_SetBreakInputSourcePolarity(TIM1, LL_TIM_BREAK_INPUT_BKIN, LL_TIM_BKIN_SOURCE_BKCOMP1, LL_TIM_BKIN_POLARITY_HIGH);
+  LL_TIM_EnableBreakInputSource(TIM1, LL_TIM_BREAK_INPUT_BKIN, LL_TIM_BKIN_SOURCE_BKCOMP1);
+  LL_TIM_SetBreakInputSourcePolarity(TIM1, LL_TIM_BREAK_INPUT_BKIN, LL_TIM_BKIN_SOURCE_BKCOMP2, LL_TIM_BKIN_POLARITY_HIGH);
+  LL_TIM_EnableBreakInputSource(TIM1, LL_TIM_BREAK_INPUT_BKIN, LL_TIM_BKIN_SOURCE_BKCOMP2);
+  LL_TIM_SetBreakInputSourcePolarity(TIM1, LL_TIM_BREAK_INPUT_BKIN, LL_TIM_BKIN_SOURCE_BKCOMP4, LL_TIM_BKIN_POLARITY_HIGH);
+  LL_TIM_EnableBreakInputSource(TIM1, LL_TIM_BREAK_INPUT_BKIN, LL_TIM_BKIN_SOURCE_BKCOMP4);
   TIM_BDTRInitStruct.OSSRState = LL_TIM_OSSR_ENABLE;
   TIM_BDTRInitStruct.OSSIState = LL_TIM_OSSI_ENABLE;
   TIM_BDTRInitStruct.LockLevel = LL_TIM_LOCKLEVEL_OFF;
   TIM_BDTRInitStruct.DeadTime = 85;
-  TIM_BDTRInitStruct.BreakState = LL_TIM_BREAK_DISABLE;
+  TIM_BDTRInitStruct.BreakState = LL_TIM_BREAK_ENABLE;
   TIM_BDTRInitStruct.BreakPolarity = LL_TIM_BREAK_POLARITY_HIGH;
-  TIM_BDTRInitStruct.BreakFilter = LL_TIM_BREAK_FILTER_FDIV1;
+  TIM_BDTRInitStruct.BreakFilter = LL_TIM_BREAK_FILTER_FDIV2_N6;
   TIM_BDTRInitStruct.BreakAFMode = LL_TIM_BREAK_AFMODE_INPUT;
   TIM_BDTRInitStruct.Break2State = LL_TIM_BREAK2_DISABLE;
   TIM_BDTRInitStruct.Break2Polarity = LL_TIM_BREAK2_POLARITY_HIGH;

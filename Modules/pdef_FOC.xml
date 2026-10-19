@@ -12,6 +12,7 @@
     <Unit>-</Unit>
     <Description>Enable LED blinking</Description>
   </Parameter>
+
   <Parameter Name="fClockFrequency">
     <DataType>single</DataType>
     <Value>170000000</Value>
@@ -23,7 +24,7 @@
   
   <Parameter Name="NADCOffsetPhaseU">
     <DataType>single</DataType>
-    <Value>2551</Value>
+    <Value>2553</Value>
     <Min>0</Min>
     <Max>65536</Max>
     <Unit>-</Unit>
@@ -32,7 +33,7 @@
 
   <Parameter Name="NADCOffsetPhaseV">
     <DataType>single</DataType>
-    <Value>2520</Value>
+    <Value>2522</Value>
     <Min>0</Min>
     <Max>65536</Max>
     <Unit>-</Unit>
@@ -55,6 +56,33 @@
     <Max>65536</Max>
     <Unit>-</Unit>
     <Description>Current gain for ADC</Description>
+  </Parameter>
+
+  <Parameter Name="BEnableMotor">
+    <DataType>boolean</DataType>
+    <Value>1</Value>
+    <Min>0</Min>
+    <Max>1</Max>
+    <Unit>-</Unit>
+    <Description>Enable motor</Description>
+  </Parameter>
+
+  <Parameter Name="ISoftwareOCPTrip">
+    <DataType>single</DataType>
+    <Value>3.0</Value>
+    <Min>-100</Min>
+    <Max>100</Max>
+    <Unit>A</Unit>
+    <Description>Overcurrent protection threshold</Description>
+  </Parameter>
+
+  <Parameter Name="VOpenLoopVoltage">
+    <DataType>single</DataType>
+    <Value>1</Value>
+    <Min>-100</Min>
+    <Max>100</Max>
+    <Unit>V</Unit>
+    <Description>Open-loop voltage</Description>
   </Parameter>
 
 </ParameterDefinitions>

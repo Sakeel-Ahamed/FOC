@@ -29,13 +29,15 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32g4xx_hal.h"
 #include "stm32g4xx_ll_adc.h"
+#include "stm32g4xx_ll_comp.h"
+#include "stm32g4xx_ll_exti.h"
+#include "stm32g4xx_ll_dac.h"
 #include "stm32g4xx_ll_dma.h"
 #include "stm32g4xx_ll_opamp.h"
 #include "stm32g4xx_ll_rcc.h"
 #include "stm32g4xx_ll_bus.h"
 #include "stm32g4xx_ll_crs.h"
 #include "stm32g4xx_ll_system.h"
-#include "stm32g4xx_ll_exti.h"
 #include "stm32g4xx_ll_cortex.h"
 #include "stm32g4xx_ll_utils.h"
 #include "stm32g4xx_ll_pwr.h"
@@ -81,6 +83,10 @@ void   MX_ADC2_Init(void);
 void   MX_OPAMP1_Init(void);
 void   MX_OPAMP2_Init(void);
 void   MX_OPAMP3_Init(void);
+void   MX_COMP1_Init(void);
+void   MX_COMP2_Init(void);
+void   MX_COMP4_Init(void);
+void   MX_DAC3_Init(void);
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

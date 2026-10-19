@@ -116,4 +116,12 @@
     <Description>50us Execution Time Maximum</Description>
   </Signal>
 
+  <Signal Name="BMotorOutputEnabled">
+    <DataType>uint8</DataType>
+    <InitialValue>0</InitialValue>
+    <Min>0</Min>
+    <Max>255</Max>
+    <Description>Motor Output Enabled</Description>
+  </Signal>
+
 </SignalDefinitions>
