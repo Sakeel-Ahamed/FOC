@@ -24,7 +24,7 @@
   
   <Parameter Name="NADCOffsetPhaseU">
     <DataType>single</DataType>
-    <Value>2553</Value>
+    <Value>2551</Value>
     <Min>0</Min>
     <Max>65536</Max>
     <Unit>-</Unit>
@@ -33,7 +33,7 @@
 
   <Parameter Name="NADCOffsetPhaseV">
     <DataType>single</DataType>
-    <Value>2522</Value>
+    <Value>2520</Value>
     <Min>0</Min>
     <Max>65536</Max>
     <Unit>-</Unit>
@@ -42,7 +42,7 @@
 
   <Parameter Name="NADCOffsetPhaseW">
     <DataType>single</DataType>
-    <Value>2523</Value>
+    <Value>2516</Value>
     <Min>0</Min>
     <Max>65536</Max>
     <Unit>-</Unit>
@@ -60,7 +60,7 @@
 
   <Parameter Name="BEnableMotor">
     <DataType>boolean</DataType>
-    <Value>1</Value>
+    <Value>0</Value>
     <Min>0</Min>
     <Max>1</Max>
     <Unit>-</Unit>
@@ -78,11 +78,30 @@
 
   <Parameter Name="VOpenLoopVoltage">
     <DataType>single</DataType>
-    <Value>1</Value>
+    <Value>0</Value>
     <Min>-100</Min>
     <Max>100</Max>
     <Unit>V</Unit>
     <Description>Open-loop voltage</Description>
   </Parameter>
+
+  <Parameter Name="fElectrical">
+    <DataType>single</DataType>
+    <Value>0</Value>
+    <Min>-100</Min>
+    <Max>100</Max>
+    <Unit>Hz</Unit>
+    <Description>Electrical frequency</Description>
+  </Parameter>
+
+  <Parameter Name="BUseEstimatedPhaseW">
+    <DataType>boolean</DataType>
+    <Value>1</Value>
+    <Min>0</Min>
+    <Max>1</Max>
+    <Unit>-</Unit>
+    <Description>Use W phase current derived from U and V phases</Description>
+  </Parameter>
+
 
 </ParameterDefinitions>
