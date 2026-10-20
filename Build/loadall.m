@@ -199,6 +199,7 @@ function count = loadParametersFromXML(xmlPath)
         maxVal      = getXMLValue(node, 'Max');
         unit        = getXMLValue(node, 'Unit');
         description = getXMLValue(node, 'Description');
+        storageClass = getXMLValue(node, 'StorageClass');
 
         % Create Simulink.Parameter object
         param              = Simulink.Parameter;
@@ -212,6 +213,28 @@ function count = loadParametersFromXML(xmlPath)
         end
         if ~isempty(maxVal)
             param.Max = str2double(maxVal);
+        end
+
+        if ~isempty(storageClass)
+            switch lower(strtrim(storageClass))
+
+                case 'auto'
+                    % Already configured as Auto.
+                    % No action required.
+
+                case 'exportedglobal'
+                    % Generate a standalone global variable.
+                    param.CoderInfo.StorageClass = 'ExportedGlobal';
+
+                case 'volatile'
+                    % Generate a standalone volatile global variable.
+                    param.CoderInfo.StorageClass = 'Custom';
+                    param.CoderInfo.CustomStorageClass = 'Volatile';
+
+                otherwise
+                    error('Unsupported StorageClass "%s" for parameter "%s".', ...
+                        storageClass, name);
+            end
         end
 
         assignin('base', name, param);
