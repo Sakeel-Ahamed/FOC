@@ -60,7 +60,7 @@
 
   <Parameter Name="BEnableMotor">
     <DataType>boolean</DataType>
-    <Value>1</Value>
+    <Value>0</Value>
     <Min>0</Min>
     <Max>1</Max>
     <Unit>-</Unit>
