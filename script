@@ -1,9 +1,9 @@
-config load "C:\Users\sakee\OneDrive\Desktop\STM32_Projects\FOC\FOC.ioc"
+config load "C:\Users\Lenovo\Desktop\Mr. Tao\University\Year 4\Team Project\VScode\FOC_Control\FOC.ioc"
 project toolchain STM32CubeIDE
 
 SetStructure Advanced
 
-project setCustomFWPath "C:\Users\sakee\Projects\STM32Cube_FW_G4_V1.6.2"
+project setCustomFWPath "C:\Users\Lenovo\STM32Cube\Repository\STM32Cube_FW_G4_V1.5.0"
 
 project generate 
 

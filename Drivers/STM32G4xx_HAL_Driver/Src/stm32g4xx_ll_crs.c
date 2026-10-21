@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * @file    stm32g4xx_ll_crs.c
+  * @file    stm32g4xx_ll_crs.h
   * @author  MCD Application Team
   * @brief   CRS LL module driver.
   ******************************************************************************
   * @attention
   *
-  * Copyright (c) 2019 STMicroelectronics.
+  * Copyright (c) 2018 STMicroelectronics.
   * All rights reserved.
   *
   * This software is licensed under terms that can be found in the LICENSE file
@@ -15,7 +15,6 @@
   *
   ******************************************************************************
   */
-
 #if defined(USE_FULL_LL_DRIVER)
 
 /* Includes ------------------------------------------------------------------*/
@@ -62,6 +61,7 @@ ErrorStatus LL_CRS_DeInit(void)
 }
 
 
+
 /**
   * @}
   */
@@ -81,3 +81,4 @@ ErrorStatus LL_CRS_DeInit(void)
   */
 
 #endif /* USE_FULL_LL_DRIVER */
+

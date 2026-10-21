@@ -38,15 +38,9 @@
 /** @addtogroup RCC_LL_Private_Macros
   * @{
   */
-#if defined(RCC_CCIPR_USART3SEL)
-#define IS_LL_RCC_USART_CLKSOURCE(__VALUE__)   (((__VALUE__) == LL_RCC_USART1_CLKSOURCE) \
-                                             || ((__VALUE__) == LL_RCC_USART2_CLKSOURCE) \
-                                             || ((__VALUE__) == LL_RCC_USART3_CLKSOURCE))
-#else
-#define IS_LL_RCC_USART_CLKSOURCE(__VALUE__)   (((__VALUE__) == LL_RCC_USART1_CLKSOURCE) \
-                                             || ((__VALUE__) == LL_RCC_USART2_CLKSOURCE))
-#endif /* RCC_CCIPR_USART3SEL*/
-
+#define IS_LL_RCC_USART_CLKSOURCE(__VALUE__)  (((__VALUE__) == LL_RCC_USART1_CLKSOURCE) \
+                                            || ((__VALUE__) == LL_RCC_USART2_CLKSOURCE) \
+                                            || ((__VALUE__) == LL_RCC_USART3_CLKSOURCE))
 #if defined(RCC_CCIPR_UART5SEL)
 #define IS_LL_RCC_UART_CLKSOURCE(__VALUE__)    (((__VALUE__) == LL_RCC_UART4_CLKSOURCE) \
                                              || ((__VALUE__) == LL_RCC_UART5_CLKSOURCE))
@@ -61,20 +55,15 @@
                                             || ((__VALUE__) == LL_RCC_I2C2_CLKSOURCE) \
                                             || ((__VALUE__) == LL_RCC_I2C3_CLKSOURCE) \
                                             || ((__VALUE__) == LL_RCC_I2C4_CLKSOURCE))
-#elif defined(RCC_CCIPR_I2C3SEL)
+
+#else
 #define IS_LL_RCC_I2C_CLKSOURCE(__VALUE__)    (((__VALUE__) == LL_RCC_I2C1_CLKSOURCE) \
                                             || ((__VALUE__) == LL_RCC_I2C2_CLKSOURCE) \
                                             || ((__VALUE__) == LL_RCC_I2C3_CLKSOURCE))
-#else
-#define IS_LL_RCC_I2C_CLKSOURCE(__VALUE__)    (((__VALUE__) == LL_RCC_I2C1_CLKSOURCE) \
-                                            || ((__VALUE__) == LL_RCC_I2C2_CLKSOURCE))
-
 #endif /* RCC_CCIPR2_I2C4SEL */
 #define IS_LL_RCC_LPTIM_CLKSOURCE(__VALUE__)  (((__VALUE__) == LL_RCC_LPTIM1_CLKSOURCE))
 
-#if defined(SAI1)
 #define IS_LL_RCC_SAI_CLKSOURCE(__VALUE__)    ((__VALUE__) == LL_RCC_SAI1_CLKSOURCE)
-#endif /* SAI1 */
 
 #define IS_LL_RCC_I2S_CLKSOURCE(__VALUE__)    ((__VALUE__) == LL_RCC_I2S_CLKSOURCE)
 
@@ -308,7 +297,6 @@ uint32_t LL_RCC_GetUSARTClockFreq(uint32_t USARTxSource)
   }
   else
   {
-#if defined(RCC_CCIPR_USART3SEL)
     if (USARTxSource == LL_RCC_USART3_CLKSOURCE)
     {
       /* USART3CLK clock frequency */
@@ -338,7 +326,6 @@ uint32_t LL_RCC_GetUSARTClockFreq(uint32_t USARTxSource)
           break;
       }
     }
-#endif /* RCC_CCIPR_USART3SEL */
   }
   return usart_frequency;
 }
@@ -492,7 +479,6 @@ uint32_t LL_RCC_GetI2CClockFreq(uint32_t I2CxSource)
   }
   else
   {
-#if defined(RCC_CCIPR_I2C3SEL)
     if (I2CxSource == LL_RCC_I2C3_CLKSOURCE)
     {
       /* I2C3 CLK clock frequency */
@@ -515,7 +501,6 @@ uint32_t LL_RCC_GetI2CClockFreq(uint32_t I2CxSource)
           break;
       }
     }
-#endif /* RCC_CCIPR_I2C3SEL */
 #if defined(RCC_CCIPR2_I2C4SEL)
     else
     {
@@ -643,7 +628,6 @@ uint32_t LL_RCC_GetLPTIMClockFreq(uint32_t LPTIMxSource)
   return lptim_frequency;
 }
 
-#if defined(SAI1)
 /**
   * @brief  Return SAIx clock frequency
   * @param  SAIxSource This parameter can be one of the following values:
@@ -696,9 +680,6 @@ uint32_t LL_RCC_GetSAIClockFreq(uint32_t SAIxSource)
   return sai_frequency;
 }
 
-#endif /* SAI1 */
-
-#if defined(SPI_I2S_SUPPORT)
 /**
   * @brief  Return I2Sx clock frequency
   * @param  I2SxSource This parameter can be one of the following values:
@@ -748,7 +729,6 @@ uint32_t LL_RCC_GetI2SClockFreq(uint32_t I2SxSource)
 
   return i2s_frequency;
 }
-#endif /* SPI_I2S_SUPPORT */
 
 #if defined(FDCAN1)
 /**

@@ -71,8 +71,8 @@
   */
 
 /** @defgroup CRYPEx_Exported_Functions_Group1 Extended AES processing functions
-  *  @brief   Extended processing functions.
-  *
+ *  @brief   Extended processing functions.
+ *
 @verbatim
   ==============================================================================
               ##### Extended AES processing functions #####
@@ -95,8 +95,7 @@
   * @param  Timeout Timeout duration
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CRYPEx_AESGCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, const uint32_t *AuthTag,
-                                                    uint32_t Timeout)
+HAL_StatusTypeDef HAL_CRYPEx_AESGCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, uint32_t *AuthTag, uint32_t Timeout)
 {
   uint32_t tickstart;
   /* Assume first Init.HeaderSize is in words */
@@ -162,7 +161,7 @@ HAL_StatusTypeDef HAL_CRYPEx_AESGCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, c
       /* Check for the Timeout */
       if (Timeout != HAL_MAX_DELAY)
       {
-        if (((HAL_GetTick() - tickstart) > Timeout) || (Timeout == 0U))
+        if (((HAL_GetTick() - tickstart) > Timeout)||(Timeout == 0U))
         {
           /* Disable the CRYP peripheral clock */
           __HAL_CRYP_DISABLE(hcryp);
@@ -217,8 +216,7 @@ HAL_StatusTypeDef HAL_CRYPEx_AESGCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, c
   * @param  Timeout Timeout duration
   * @retval HAL status
   */
-HAL_StatusTypeDef HAL_CRYPEx_AESCCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, const uint32_t *AuthTag,
-                                                    uint32_t Timeout)
+HAL_StatusTypeDef HAL_CRYPEx_AESCCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, uint32_t *AuthTag, uint32_t Timeout)
 {
   uint32_t tagaddr = (uint32_t)AuthTag;
   uint32_t tickstart;
@@ -269,7 +267,7 @@ HAL_StatusTypeDef HAL_CRYPEx_AESCCM_GenerateAuthTAG(CRYP_HandleTypeDef *hcryp, c
       /* Check for the Timeout */
       if (Timeout != HAL_MAX_DELAY)
       {
-        if (((HAL_GetTick() - tickstart) > Timeout) || (Timeout == 0U))
+        if (((HAL_GetTick() - tickstart) > Timeout) ||(Timeout == 0U))
         {
           /* Disable the CRYP peripheral Clock */
           __HAL_CRYP_DISABLE(hcryp);
